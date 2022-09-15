@@ -1,17 +1,23 @@
 package com.example.demo.user;
 
+import com.example.demo.task.Task;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @ToString
 @Setter
 @Getter
 @Entity
+@NoArgsConstructor
 @Table(name = "users")
 public class User {
 
@@ -41,15 +47,11 @@ public class User {
     @Transient
     private Integer age;
 
-    public User() {
-    }
-
-    public User(Long id, String name, String email, LocalDate birthDate) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.birthDate = birthDate;
-    }
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
 
     public User(String name, String email, LocalDate birthDate) {
         this.name = name;
@@ -61,4 +63,13 @@ public class User {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
     }
 
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.setUser(this);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
+        task.setUser(null);
+    }
 }

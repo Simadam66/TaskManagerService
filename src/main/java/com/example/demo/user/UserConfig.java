@@ -12,7 +12,7 @@ import static java.time.Month.*;
 @Configuration
 public class UserConfig {
 
-    @Bean
+    @Bean(name = "userInitializerBean")
     CommandLineRunner commandLineRunner(UserRepository repository){
         return args -> {
             User mariah = new User(

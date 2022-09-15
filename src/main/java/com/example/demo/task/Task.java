@@ -1,5 +1,6 @@
 package com.example.demo.task;
 
+import com.example.demo.user.User;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -39,6 +40,9 @@ public class Task {
     @Column(name = "date_time")
     private LocalDate date_time;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
+
     public Task() {
     }
 
@@ -53,5 +57,17 @@ public class Task {
         this.name = name;
         this.description = description;
         this.date_time = date_time;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Task )) return false;
+        return id != null && id.equals(((Task) o).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
     }
 }

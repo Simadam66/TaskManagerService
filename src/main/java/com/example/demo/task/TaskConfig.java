@@ -14,7 +14,7 @@ import static java.time.Month.*;
 @Configuration
 public class TaskConfig {
 
-    @Bean
+    @Bean(name = "taskInitializerBean")
     CommandLineRunner commandLineRunner(TaskRepository repository){
         return args -> {
             Task task1 = new Task(

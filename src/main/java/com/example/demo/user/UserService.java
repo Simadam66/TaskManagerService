@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,46 +23,49 @@ public class UserService {
     }
 
     public User getUser(Long userId) {
-        boolean exists = userRepository.existsById(userId);
-        if (!exists) {
-            throw new IllegalStateException("user with id " + userId + " does not exists");
-        }
-        return userRepository.findById(userId).get();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalStateException("user with id " + userId + "does not exist"));
+        return user;
     }
 
-    public void addNewUser(User user) {
+    public User addNewUser(User user) {
         Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
         if (userOptional.isPresent()) {
             throw new IllegalStateException("email taken");
         }
         userRepository.save(user);
+        return user;
     }
 
-    public void deleteStudent(Long userId) {
-        boolean exists = userRepository.existsById(userId);
-        if (!exists) {
-            throw new IllegalStateException("user with id " + userId + " does not exists");
-        }
+    public User deleteStudent(Long userId) {
+        User user = getUser(userId);
         userRepository.deleteById(userId);
+        return user;
     }
 
     @Transactional
-    public void updateUser(Long userId, String name, String email) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("user with id " + userId + "does not exists"));
+    public User updateUser(Long userId, User updatedUser) {
+        User user = getUser(userId);
 
-        if (name != null && name.length() > 0 && !Objects.equals(user.getName(), name)) {
-            user.setName(name);
+        String newName = updatedUser.getName();
+        if (newName != null && newName.length() > 0 && !Objects.equals(user.getName(), newName)) {
+            user.setName(newName);
         }
 
-        if (email != null && email.length() > 0 && !Objects.equals(user.getEmail(), email)) {
-            Optional<User> userOptional = userRepository.findUserByEmail(email);
+        String newEmail = updatedUser.getEmail();
+        if (newEmail != null && newEmail.length() > 0 && !Objects.equals(user.getEmail(), newEmail)) {
+            Optional<User> userOptional = userRepository.findUserByEmail(newEmail);
             if (userOptional.isPresent()) {
                 throw new IllegalStateException("email taken");
             }
-            user.setEmail(email);
+            user.setEmail(newEmail);
         }
 
+        LocalDate newDate = updatedUser.getBirthDate();
+        if (newDate != null && !Objects.equals(user.getBirthDate(), newDate)) {
+            user.setBirthDate(newDate);
+        }
 
+        return user;
     }
 }

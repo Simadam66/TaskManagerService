@@ -1,8 +1,6 @@
 package com.example.demo.user;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -11,6 +9,8 @@ import java.time.Period;
 @ToString
 @Setter
 @Getter
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "users")
 public class User {
@@ -25,13 +25,13 @@ public class User {
             strategy = GenerationType.SEQUENCE,
             generator = "user_sequence"
     )
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "birthDate")
@@ -41,16 +41,6 @@ public class User {
     @Transient
     private Integer age;
 
-    public User() {
-    }
-
-    public User(Long id, String name, String email, LocalDate birthDate) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.birthDate = birthDate;
-    }
-
     public User(String name, String email, LocalDate birthDate) {
         this.name = name;
         this.email = email;
@@ -59,6 +49,10 @@ public class User {
 
     public Integer getAge() {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
+    }
+
+    public static User update(UserRequest userRequest) {
+        return new User(userRequest.getName(), userRequest.getEmail(), userRequest.getBirthDate());
     }
 
 }

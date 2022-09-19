@@ -1,10 +1,7 @@
 package com.example.demo.user;
 
 import com.example.demo.task.Task;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -16,8 +13,9 @@ import java.util.Objects;
 @ToString
 @Setter
 @Getter
-@Entity
 @NoArgsConstructor
+@AllArgsConstructor
+@Entity
 @Table(name = "users")
 public class User {
 
@@ -31,13 +29,13 @@ public class User {
             strategy = GenerationType.SEQUENCE,
             generator = "user_sequence"
     )
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
     @Column(name = "birthDate")
@@ -61,6 +59,10 @@ public class User {
 
     public Integer getAge() {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
+    }
+
+    public static User update(UserRequest userRequest) {
+        return new User(userRequest.getName(), userRequest.getEmail(), userRequest.getBirthDate());
     }
 
     public void addTask(Task task) {

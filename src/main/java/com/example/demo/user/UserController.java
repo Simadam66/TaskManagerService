@@ -1,6 +1,8 @@
 package com.example.demo.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,30 +19,45 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers() {
-        return userService.getUsers();
+    public ResponseEntity<List<UserResponse>> getUsers() {
+        return ResponseEntity.ok(
+                userService.getUsers()
+                .stream()
+                .map(UserResponse::of)
+                .toList());
     }
 
     @GetMapping(path = "{userId}")
-    public User getUser(@PathVariable("userId") Long userId) {
-        return userService.getUser(userId);
+    public ResponseEntity<UserResponse> getUser(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(UserResponse.of(userService.getUser(userId)));
     }
 
     @PostMapping
-    public void registerNewUser(@RequestBody User user) {
-        userService.addNewUser(user);
+    public ResponseEntity<String> registerNewUser(@RequestBody UserRequest userRequest) {
+        userService.addNewUser(User.update(userRequest));
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "{userId}")
-    public void deleteUser(@PathVariable("userId") Long userId) {
+    public ResponseEntity<String> deleteUser(@PathVariable("userId") Long userId) {
         userService.deleteStudent(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @PutMapping(path = "{userId}")
+    public ResponseEntity<String> updateUser(
+            @PathVariable("userId") Long userId,
+            @RequestBody UserRequest userRequest) {
+        userService.updateUser(userId, User.update(userRequest));
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //Obsolete implementation
+/*    @PutMapping(path = "{userId}")
     public void updateUser(
             @PathVariable("userId") Long userId,
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String email) {
         userService.updateUser(userId, name, email);
-    }
+    }*/
 }

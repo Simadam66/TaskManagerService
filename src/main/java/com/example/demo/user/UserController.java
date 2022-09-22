@@ -45,11 +45,11 @@ public class UserController {
     }
 
     @PutMapping(path = "{userId}")
-    public ResponseEntity<String> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @PathVariable("userId") Long userId,
             @RequestBody UserRequest userRequest) {
-        userService.updateUser(userId, User.update(userRequest));
-        return new ResponseEntity<>(HttpStatus.OK);
+        User updatedUser = userService.updateUser(userId, User.update(userRequest));
+        return new ResponseEntity<>(UserResponse.of(updatedUser),HttpStatus.OK);
     }
 
     //Obsolete implementation

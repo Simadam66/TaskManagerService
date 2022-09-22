@@ -28,13 +28,14 @@ public class UserService {
         return user;
     }
 
-    public User addNewUser(User user) {
-        Optional<User> userOptional = userRepository.findUserByEmail(user.getEmail());
+    public User addNewUser(UserRequest userRequest) {
+        Optional<User> userOptional = userRepository.findUserByEmail(userRequest.getEmail());
         if (userOptional.isPresent()) {
             throw new IllegalStateException("email taken");
         }
-        userRepository.save(user);
-        return user;
+        User userToSave = User.of(userRequest);
+        userRepository.save(userToSave);
+        return userToSave;
     }
 
     public User deleteStudent(Long userId) {
@@ -44,28 +45,18 @@ public class UserService {
     }
 
     @Transactional
-    public User updateUser(Long userId, User updatedUser) {
-        User user = getUser(userId);
+    public User updateUser(Long userId, UserRequest userRequest) {
+        User userToUpdate = getUser(userId);
 
-        String newName = updatedUser.getName();
-        if (newName != null && newName.length() > 0 && !Objects.equals(user.getName(), newName)) {
-            user.setName(newName);
-        }
-
-        String newEmail = updatedUser.getEmail();
-        if (newEmail != null && newEmail.length() > 0 && !Objects.equals(user.getEmail(), newEmail)) {
-            Optional<User> userOptional = userRepository.findUserByEmail(newEmail);
+        if (!userToUpdate.getEmail().equals(userRequest.getEmail())) {
+            Optional<User> userOptional = userRepository.findUserByEmail(userRequest.getEmail());
             if (userOptional.isPresent()) {
                 throw new IllegalStateException("email taken");
             }
-            user.setEmail(newEmail);
         }
 
-        LocalDate newDate = updatedUser.getBirthDate();
-        if (newDate != null && !Objects.equals(user.getBirthDate(), newDate)) {
-            user.setBirthDate(newDate);
-        }
-
-        return user;
+        userToUpdate.update(userRequest);
+        userRepository.save(userToUpdate);
+        return userToUpdate;
     }
 }

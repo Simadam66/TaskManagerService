@@ -1,14 +1,13 @@
 package com.example.demo.task;
 
 import com.example.demo.user.User;
+import com.example.demo.user.UserRequest;
 import com.example.demo.user.UserResponse;
 import com.example.demo.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,22 +16,50 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
-    private final UserService userService;
 
     @Autowired
-    public TaskController(TaskService taskService, UserService userService) {
+    public TaskController(TaskService taskService) {
         this.taskService = taskService;
-        this.userService = userService;
     }
 
     @GetMapping
     public ResponseEntity<List<TaskResponse>> getUserTasks(@PathVariable("userId") Long userId) {
-        User user = userService.getUser(userId);
         return ResponseEntity.ok(
-                user.getTasks()
+                taskService.getUserTasks(userId)
                         .stream()
                         .map(TaskResponse::of)
                         .toList()
                 );
+    }
+
+    @GetMapping(path = "{taskId}")
+    public ResponseEntity<TaskResponse> getTask(@PathVariable("userId") Long userId,
+                                                @PathVariable("taskId") Long taskId) {
+        return ResponseEntity.ok(TaskResponse.of(taskService.getTask(userId, taskId)));
+    }
+
+    // TODO: validation, Postman: coud not get response, de mukodik
+    @PostMapping
+    public ResponseEntity<Task> registerNewTask(@PathVariable("userId") Long userId,
+                                                @RequestBody /*@Valid*/  TaskRequest taskRequest) {
+        Task newTask = taskService.addNewTask(userId,taskRequest);
+        return new ResponseEntity<>(newTask, HttpStatus.CREATED);
+    }
+
+    @DeleteMapping(path = "{taskId}")
+    public ResponseEntity<String> deleteTask(@PathVariable("userId") Long userId,
+                                             @PathVariable("taskId") Long taskId) {
+        taskService.deleteTask(userId,taskId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // TODO: validation, Postman: coud not get response, de mukodik
+    @PutMapping(path = "{taskId}")
+    public ResponseEntity<Task> updateTask(
+            @PathVariable("userId") Long userId,
+            @PathVariable("taskId") Long taskId,
+            @RequestBody /*@Valid*/ TaskRequest taskRequest) {
+        Task updatedTask = taskService.updateTask(userId, taskId, taskRequest);
+        return new ResponseEntity<>(updatedTask,HttpStatus.OK);
     }
 }

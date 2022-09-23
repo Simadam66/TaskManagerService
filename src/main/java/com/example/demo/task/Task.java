@@ -1,15 +1,17 @@
 package com.example.demo.task;
 
 import com.example.demo.user.User;
+import com.example.demo.user.UserRequest;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.Optional;
 
-
-@ToString
+//@Builder
 @Setter
 @Getter
 @Entity
@@ -43,6 +45,8 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
+    //Task(String name ,String desc, LocalDate date, User user)
+
     public Task() {
     }
 
@@ -59,6 +63,16 @@ public class Task {
         this.date_time = date_time;
     }
 
+    // TODO: ez valoszinuleg igy nem jo
+    public static Task of(TaskRequest taskRequest) {
+        /*return Task.builder()
+                .name(taskRequest.getName())
+                .description(taskRequest.getDescription())
+                .date_time(taskRequest.getDate_time())
+                .build();*/
+        return new Task(taskRequest.getName(), taskRequest.getDescription(), taskRequest.getDate_time());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -69,5 +83,22 @@ public class Task {
     @Override
     public int hashCode() {
         return getClass().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return "Task{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", date_time=" + date_time +
+                '}';
+    }
+
+    public Task update(TaskRequest taskRequest) {
+        this.name = taskRequest.getName();
+        this.description = taskRequest.getDescription();
+        this.date_time = taskRequest.getDate_time();
+        return this;
     }
 }

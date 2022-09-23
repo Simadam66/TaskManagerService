@@ -1,10 +1,14 @@
 package com.example.demo.task;
 
+import com.example.demo.user.User;
+import com.example.demo.user.UserRequest;
 import com.example.demo.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -16,6 +20,46 @@ public class TaskService {
     public TaskService(TaskRepository taskRepository, UserService userService) {
         this.taskRepository = taskRepository;
         this.userService = userService;
+    }
+
+    public List<Task> getUserTasks(Long userId){
+        return userService.getUser(userId).getTasks();
+    }
+
+    public Task getTask(Long userId, Long taskId) {
+        taskRepository.findById(taskId)
+                .orElseThrow( () -> new IllegalStateException("task with id " + taskId + " does not exist"));
+
+        Optional<Task> task = getUserTasks(userId).stream().filter( t -> t.getId().equals(taskId)).findFirst();
+        if (task.isEmpty()){
+            throw new IllegalStateException("this user does not have a task with id: " + taskId);
+        }
+
+        return task.get();
+    }
+
+    // TODO: task letezesenek ellenorzese kell e
+    public Task addNewTask(Long userId, TaskRequest taskRequest) {
+        Task newTask = Task.of(taskRequest);
+        userService.getUser(userId).addTask(newTask);
+        taskRepository.save(newTask);
+        return newTask;
+    }
+
+    // TODO: mukodik, de atkene beszelni
+    public void deleteTask(Long userId, Long taskId) {
+        Task task = getTask(userId, taskId);
+        userService.getUser(userId).removeTask(task);
+        taskRepository.deleteById(taskId);
+    }
+
+    // TODO: transactional userre megvaltoztat
+    @Transactional
+    public Task updateTask(Long userId, Long taskId, TaskRequest taskRequest) {
+        Task taskToUpdate = getTask(userId, taskId);
+        taskToUpdate.update(taskRequest);
+        taskRepository.save(taskToUpdate);
+        return taskToUpdate;
     }
 
 }

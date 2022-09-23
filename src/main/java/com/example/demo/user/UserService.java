@@ -37,7 +37,7 @@ public class UserService {
         return user;
     }
 
-    public User deleteStudent(Long userId) {
+    public User deleteUser(Long userId) {
         User user = getUser(userId);
         userRepository.deleteById(userId);
         return user;

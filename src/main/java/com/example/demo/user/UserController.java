@@ -34,9 +34,10 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> registerNewUser(@RequestBody @Valid UserRequest userRequest) {
+    public ResponseEntity<UserResponse> registerNewUser(@RequestBody @Valid UserRequest userRequest) {
         User newUser = userService.addNewUser(userRequest);
-        return new ResponseEntity<>(newUser,HttpStatus.CREATED);
+        UserResponse response = UserResponse.of(newUser);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "{userId}")
@@ -46,11 +47,12 @@ public class UserController {
     }
 
     @PutMapping(path = "{userId}")
-    public ResponseEntity<User> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @PathVariable("userId") Long userId,
             @RequestBody @Valid UserRequest userRequest) {
         User updatedUser = userService.updateUser(userId, userRequest);
-        return new ResponseEntity<>(updatedUser,HttpStatus.OK);
+        UserResponse response = UserResponse.of(updatedUser);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     //Obsolete implementation

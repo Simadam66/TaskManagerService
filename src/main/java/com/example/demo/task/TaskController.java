@@ -1,9 +1,5 @@
 package com.example.demo.task;
 
-import com.example.demo.user.User;
-import com.example.demo.user.UserRequest;
-import com.example.demo.user.UserResponse;
-import com.example.demo.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,7 +26,7 @@ public class TaskController {
                         .stream()
                         .map(TaskResponse::of)
                         .toList()
-                );
+        );
     }
 
     @GetMapping(path = "{taskId}")
@@ -39,11 +35,10 @@ public class TaskController {
         return ResponseEntity.ok(TaskResponse.of(taskService.getTask(userId, taskId)));
     }
 
-    // TODO: Postman: coud not get response, de mukodik
     @PostMapping
     public ResponseEntity<TaskResponse> registerNewTask(@PathVariable("userId") Long userId,
                                                         @RequestBody @Valid TaskRequest taskRequest) {
-        Task newTask = taskService.addNewTask(userId,taskRequest);
+        Task newTask = taskService.addNewTask(userId, taskRequest);
         TaskResponse response = TaskResponse.of(newTask);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -51,11 +46,10 @@ public class TaskController {
     @DeleteMapping(path = "{taskId}")
     public ResponseEntity<String> deleteTask(@PathVariable("userId") Long userId,
                                              @PathVariable("taskId") Long taskId) {
-        taskService.deleteTask(userId,taskId);
+        taskService.deleteTask(userId, taskId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // TODO: Postman: coud not get response, de mukodik
     @PutMapping(path = "{taskId}")
     public ResponseEntity<TaskResponse> updateTask(
             @PathVariable("userId") Long userId,
@@ -63,6 +57,6 @@ public class TaskController {
             @RequestBody @Valid TaskRequest taskRequest) {
         Task updatedTask = taskService.updateTask(userId, taskId, taskRequest);
         TaskResponse response = TaskResponse.of(updatedTask);
-        return new ResponseEntity<>(response,HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 }

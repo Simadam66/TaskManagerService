@@ -1,6 +1,5 @@
 package com.example.demo.task;
 
-import com.example.demo.user.UserResponse;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 
@@ -21,7 +20,7 @@ public class TaskResponse {
     @JsonProperty("date_time")
     private LocalDate date_time;
 
-    public static TaskResponse of(Task task){
+    public static TaskResponse of(Task task) {
         return TaskResponse.builder()
                 .id(task.getId())
                 .name(task.getName())

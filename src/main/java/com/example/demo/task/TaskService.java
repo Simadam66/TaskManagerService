@@ -14,25 +14,25 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserService userService;
 
-    @Autowired 
+    @Autowired
     public TaskService(TaskRepository taskRepository, UserService userService) {
         this.taskRepository = taskRepository;
         this.userService = userService;
     }
 
-    public List<Task> getUserTasks(Long userId){
+    public List<Task> getUserTasks(Long userId) {
         return userService.getUser(userId).getTasks();
     }
 
     // TODO: atnez
     public Task getTask(Long userId, Long taskId) {
-        Optional<List<Task>> UserTasks = Optional.of(getUserTasks(userId));
+        List<Task> UserTasks = getUserTasks(userId);
 
         taskRepository.findById(taskId)
-                .orElseThrow( () -> new IllegalStateException("task with id " + taskId + " does not exist"));
+                .orElseThrow(() -> new IllegalStateException("task with id " + taskId + " does not exist"));
 
-        Optional<Task> task = UserTasks.get().stream().filter( t -> t.getId().equals(taskId)).findFirst();
-        if (task.isEmpty()){
+        Optional<Task> task = UserTasks.stream().filter(t -> t.getId().equals(taskId)).findFirst();
+        if (task.isEmpty()) {
             throw new IllegalStateException("this user does not have a task with id: " + taskId);
         }
 

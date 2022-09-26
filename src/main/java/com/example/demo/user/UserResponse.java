@@ -20,7 +20,7 @@ public class UserResponse {
     @JsonProperty("birth_date")
     private LocalDate birthDate;
 
-    public static UserResponse of(User user){
+    public static UserResponse of(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())

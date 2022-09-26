@@ -6,8 +6,8 @@ import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
 
+@Builder
 @ToString
-@Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -31,12 +31,11 @@ public class User {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "birthDate")
     private LocalDate birthDate;
-
 
     @Transient
     private Integer age;
@@ -51,8 +50,24 @@ public class User {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
     }
 
-    public static User update(UserRequest userRequest) {
-        return new User(userRequest.getName(), userRequest.getEmail(), userRequest.getBirthDate());
+    public static User of(UserRequest userRequest) {
+        return User.builder()
+                .name(userRequest.getName())
+                .email(userRequest.getEmail())
+                .birthDate(userRequest.getBirthDate())
+                .build();
+    }
+
+    public User update(UserRequest userRequest) {
+        this.name = userRequest.getName();
+        this.email = userRequest.getEmail();
+        this.birthDate = userRequest.getBirthDate();
+        return this;
+
+        /*String newEmail = userRequest.getEmail();
+        if (newEmail != null && !this.email.equals(newEmail)) {
+            this.email = newEmail;
+        }*/
     }
 
 }

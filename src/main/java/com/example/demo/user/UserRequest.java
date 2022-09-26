@@ -11,12 +11,10 @@ import java.time.LocalDate;
 public class UserRequest {
 
     @NotBlank(message = "name can not be blank")
-    @NotNull
     @JsonProperty("name")
     private String name;
 
     @NotBlank(message = "email can not be blank")
-    @NotNull
     @JsonProperty("email")
     private String email;
 

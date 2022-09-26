@@ -1,7 +1,6 @@
 package com.example.demo.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sun.istack.NotNull;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;

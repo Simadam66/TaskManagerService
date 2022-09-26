@@ -7,13 +7,14 @@ import org.springframework.context.annotation.Configuration;
 import java.time.LocalDate;
 import java.util.List;
 
-import static java.time.Month.*;
+import static java.time.Month.FEBRUARY;
+import static java.time.Month.JANUARY;
 
 @Configuration
 public class UserConfig {
 
     @Bean
-    CommandLineRunner commandLineRunner(UserRepository repository){
+    CommandLineRunner commandLineRunner(UserRepository repository) {
         return args -> {
             User mariah = new User(
                     "Mariah",
@@ -34,7 +35,7 @@ public class UserConfig {
             );
 
             repository.saveAll(
-                    List.of(mariah,alex,lajos)
+                    List.of(mariah, alex, lajos)
             );
 
         };

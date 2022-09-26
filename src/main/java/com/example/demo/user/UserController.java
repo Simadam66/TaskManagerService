@@ -23,9 +23,9 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getUsers() {
         return ResponseEntity.ok(
                 userService.getUsers()
-                .stream()
-                .map(UserResponse::of)
-                .toList());
+                        .stream()
+                        .map(UserResponse::of)
+                        .toList());
     }
 
     @GetMapping(path = "{userId}")

@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,12 +39,13 @@ public class TaskController {
         return ResponseEntity.ok(TaskResponse.of(taskService.getTask(userId, taskId)));
     }
 
-    // TODO: validation, Postman: coud not get response, de mukodik
+    // TODO: Postman: coud not get response, de mukodik
     @PostMapping
-    public ResponseEntity<Task> registerNewTask(@PathVariable("userId") Long userId,
-                                                @RequestBody /*@Valid*/  TaskRequest taskRequest) {
+    public ResponseEntity<TaskResponse> registerNewTask(@PathVariable("userId") Long userId,
+                                                        @RequestBody @Valid TaskRequest taskRequest) {
         Task newTask = taskService.addNewTask(userId,taskRequest);
-        return new ResponseEntity<>(newTask, HttpStatus.CREATED);
+        TaskResponse response = TaskResponse.of(newTask);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "{taskId}")
@@ -53,13 +55,14 @@ public class TaskController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // TODO: validation, Postman: coud not get response, de mukodik
+    // TODO: Postman: coud not get response, de mukodik
     @PutMapping(path = "{taskId}")
-    public ResponseEntity<Task> updateTask(
+    public ResponseEntity<TaskResponse> updateTask(
             @PathVariable("userId") Long userId,
             @PathVariable("taskId") Long taskId,
-            @RequestBody /*@Valid*/ TaskRequest taskRequest) {
+            @RequestBody @Valid TaskRequest taskRequest) {
         Task updatedTask = taskService.updateTask(userId, taskId, taskRequest);
-        return new ResponseEntity<>(updatedTask,HttpStatus.OK);
+        TaskResponse response = TaskResponse.of(updatedTask);
+        return new ResponseEntity<>(response,HttpStatus.OK);
     }
 }

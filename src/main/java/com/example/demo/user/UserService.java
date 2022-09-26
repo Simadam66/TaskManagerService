@@ -1,5 +1,6 @@
 package com.example.demo.user;
 
+import com.example.demo.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -67,5 +68,11 @@ public class UserService {
         }
 
         return user;
+    }
+
+    // TODO: atbeszel return
+    public boolean removeUserTask(Long userId, Task task) {
+        getUser(userId).removeTask(task);
+        return true;
     }
 }

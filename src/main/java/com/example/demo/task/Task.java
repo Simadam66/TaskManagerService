@@ -1,24 +1,20 @@
 package com.example.demo.task;
 
 import com.example.demo.user.User;
-import com.example.demo.user.UserRequest;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Optional;
 
-//@Builder
-@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 @Getter
+@Setter
 @Entity
 @Table(name = "tasks")
+@ToString(exclude = "user")
 public class Task {
-
-    // Formátum: "name":"My task","description" : "Description of task", "date_time" : "2016-05-25 14:25:00"
 
     @Id
     @SequenceGenerator(
@@ -45,32 +41,18 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    //Task(String name ,String desc, LocalDate date, User user)
-
-    public Task() {
-    }
-
-    public Task(Long id, String name, String description, LocalDate date_time) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.date_time = date_time;
-    }
-
     public Task(String name, String description, LocalDate date_time) {
         this.name = name;
         this.description = description;
         this.date_time = date_time;
     }
 
-    // TODO: ez valoszinuleg igy nem jo
     public static Task of(TaskRequest taskRequest) {
-        /*return Task.builder()
+        return Task.builder()
                 .name(taskRequest.getName())
                 .description(taskRequest.getDescription())
                 .date_time(taskRequest.getDate_time())
-                .build();*/
-        return new Task(taskRequest.getName(), taskRequest.getDescription(), taskRequest.getDate_time());
+                .build();
     }
 
     @Override
@@ -83,16 +65,6 @@ public class Task {
     @Override
     public int hashCode() {
         return getClass().hashCode();
-    }
-
-    @Override
-    public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", date_time=" + date_time +
-                '}';
     }
 
     public Task update(TaskRequest taskRequest) {

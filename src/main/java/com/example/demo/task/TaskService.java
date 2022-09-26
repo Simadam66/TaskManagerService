@@ -1,7 +1,5 @@
 package com.example.demo.task;
 
-import com.example.demo.user.User;
-import com.example.demo.user.UserRequest;
 import com.example.demo.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,11 +24,14 @@ public class TaskService {
         return userService.getUser(userId).getTasks();
     }
 
+    // TODO: atnez
     public Task getTask(Long userId, Long taskId) {
+        Optional<List<Task>> UserTasks = Optional.of(getUserTasks(userId));
+
         taskRepository.findById(taskId)
                 .orElseThrow( () -> new IllegalStateException("task with id " + taskId + " does not exist"));
 
-        Optional<Task> task = getUserTasks(userId).stream().filter( t -> t.getId().equals(taskId)).findFirst();
+        Optional<Task> task = UserTasks.get().stream().filter( t -> t.getId().equals(taskId)).findFirst();
         if (task.isEmpty()){
             throw new IllegalStateException("this user does not have a task with id: " + taskId);
         }
@@ -38,7 +39,6 @@ public class TaskService {
         return task.get();
     }
 
-    // TODO: task letezesenek ellenorzese kell e
     public Task addNewTask(Long userId, TaskRequest taskRequest) {
         Task newTask = Task.of(taskRequest);
         userService.getUser(userId).addTask(newTask);
@@ -46,10 +46,10 @@ public class TaskService {
         return newTask;
     }
 
-    // TODO: mukodik, de atkene beszelni
+    // TODO: atnez
     public void deleteTask(Long userId, Long taskId) {
         Task task = getTask(userId, taskId);
-        userService.getUser(userId).removeTask(task);
+        userService.removeUserTask(userId, task);
         taskRepository.deleteById(taskId);
     }
 

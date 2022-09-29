@@ -36,10 +36,10 @@ public class UserService {
         return userToSave;
     }
 
-    public User deleteUser(Long userId) {
+    public boolean deleteUser(Long userId) {
         User user = getUser(userId);
         userRepository.deleteById(userId);
-        return user;
+        return true;
     }
 
     @Transactional

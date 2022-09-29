@@ -56,7 +56,6 @@ public class TaskController {
             @PathVariable("taskId") Long taskId,
             @RequestBody @Valid TaskRequest taskRequest) {
         Task updatedTask = taskService.updateTask(userId, taskId, taskRequest);
-        TaskResponse response = TaskResponse.of(updatedTask);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(TaskResponse.of(updatedTask));
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -22,9 +23,9 @@ public class UserController {
     public ResponseEntity<List<UserResponse>> getUsers() {
         return ResponseEntity.ok(
                 userService.getUsers()
-                .stream()
-                .map(UserResponse::of)
-                .toList());
+                        .stream()
+                        .map(UserResponse::of)
+                        .toList());
     }
 
     @GetMapping(path = "{userId}")
@@ -33,9 +34,10 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<String> registerNewUser(@RequestBody UserRequest userRequest) {
-        userService.addNewUser(User.update(userRequest));
-        return new ResponseEntity<>(HttpStatus.CREATED);
+    public ResponseEntity<UserResponse> registerNewUser(@RequestBody @Valid UserRequest userRequest) {
+        User newUser = userService.addNewUser(userRequest);
+        UserResponse response = UserResponse.of(newUser);
+        return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping(path = "{userId}")
@@ -47,9 +49,10 @@ public class UserController {
     @PutMapping(path = "{userId}")
     public ResponseEntity<UserResponse> updateUser(
             @PathVariable("userId") Long userId,
-            @RequestBody UserRequest userRequest) {
-        User updatedUser = userService.updateUser(userId, User.update(userRequest));
-        return new ResponseEntity<>(UserResponse.of(updatedUser),HttpStatus.OK);
+            @RequestBody @Valid UserRequest userRequest) {
+        User updatedUser = userService.updateUser(userId, userRequest);
+        UserResponse response = UserResponse.of(updatedUser);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     //Obsolete implementation

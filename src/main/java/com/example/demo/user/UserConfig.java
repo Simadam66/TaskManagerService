@@ -14,7 +14,7 @@ import static java.time.Month.*;
 public class UserConfig {
 
     @Bean(name = "userInitializerBean")
-    CommandLineRunner commandLineRunner(UserRepository repository){
+    CommandLineRunner commandLineRunner(UserRepository repository) {
         return args -> {
             User mariah = new User(
                     "Mariah",
@@ -57,7 +57,7 @@ public class UserConfig {
             alex.addTask(task3);
 
             repository.saveAll(
-                    List.of(mariah,alex,lajos)
+                    List.of(mariah, alex, lajos)
             );
 
         };

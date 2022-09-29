@@ -24,7 +24,6 @@ public class TaskService {
         return userService.getUser(userId).getTasks();
     }
 
-    // TODO: atnez
     public Task getTask(Long userId, Long taskId) {
         List<Task> UserTasks = getUserTasks(userId);
 
@@ -39,14 +38,14 @@ public class TaskService {
         return task.get();
     }
 
+    // TODO atnez
     public Task addNewTask(Long userId, TaskRequest taskRequest) {
         Task newTask = Task.of(taskRequest);
-        userService.getUser(userId).addTask(newTask);
+        userService.addUserTask(userId, newTask);
         taskRepository.save(newTask);
         return newTask;
     }
 
-    // TODO: atnez
     public void deleteTask(Long userId, Long taskId) {
         Task task = getTask(userId, taskId);
         userService.removeUserTask(userId, task);

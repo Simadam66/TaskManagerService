@@ -70,9 +70,13 @@ public class UserService {
         return user;
     }
 
-    // TODO: atbeszel return
     public boolean removeUserTask(Long userId, Task task) {
         getUser(userId).removeTask(task);
+        return true;
+    }
+
+    public boolean addUserTask(Long userId, Task task) {
+        getUser(userId).addTask(task);
         return true;
     }
 }

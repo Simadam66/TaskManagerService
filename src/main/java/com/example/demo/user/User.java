@@ -67,11 +67,11 @@ public class User {
 
     public void addTask(Task task) {
         tasks.add(task);
-        task.setUser(this);
+        task.assignToUSer(this);
     }
 
     public void removeTask(Task task) {
         tasks.remove(task);
-        task.setUser(null);
+        task.removeFromUser();
     }
 }

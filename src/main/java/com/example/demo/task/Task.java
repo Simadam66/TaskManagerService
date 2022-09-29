@@ -10,7 +10,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 @Getter
-@Setter
 @Entity
 @Table(name = "tasks")
 @ToString(exclude = "user")
@@ -72,5 +71,13 @@ public class Task {
         this.description = taskRequest.getDescription();
         this.date_time = taskRequest.getDate_time();
         return this;
+    }
+
+    public void assignToUSer(User user) {
+        this.user = user;
+    }
+
+    public void removeFromUser() {
+        this.user = null;
     }
 }

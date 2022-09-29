@@ -6,6 +6,7 @@ import lombok.*;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+@EqualsAndHashCode(exclude = "id")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -25,7 +26,8 @@ public class Task {
             strategy = GenerationType.SEQUENCE,
             generator = "task_sequence"
     )
-    @Column(name = "Id")
+
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "name")
@@ -54,18 +56,6 @@ public class Task {
                 .build();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Task)) return false;
-        return id != null && id.equals(((Task) o).getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
-
     public Task update(TaskRequest taskRequest) {
         this.name = taskRequest.getName();
         this.description = taskRequest.getDescription();
@@ -73,7 +63,7 @@ public class Task {
         return this;
     }
 
-    public void assignToUSer(User user) {
+    public void assignToUser(User user) {
         this.user = user;
     }
 

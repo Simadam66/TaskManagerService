@@ -38,7 +38,6 @@ public class TaskService {
         return task.get();
     }
 
-    // TODO atnez
     public Task addNewTask(Long userId, TaskRequest taskRequest) {
         Task newTask = Task.of(taskRequest);
         userService.addUserTask(userId, newTask);
@@ -53,12 +52,18 @@ public class TaskService {
         return true;
     }
 
-    // TODO: transactional userre megvaltoztat
     @Transactional
     public Task updateTask(Long userId, Long taskId, TaskRequest taskRequest) {
         Task taskToUpdate = getTask(userId, taskId);
-        taskToUpdate.update(taskRequest);
-        taskRepository.save(taskToUpdate);
+
+        if (taskToUpdate.getName() != taskRequest.getName() ||
+            taskToUpdate.getDescription() != taskRequest.getDescription() ||
+            taskToUpdate.getDate_time() != taskRequest.getDate_time())
+        {
+            taskToUpdate.update(taskRequest);
+            taskRepository.save(taskToUpdate);
+        }
+
         return taskToUpdate;
     }
 

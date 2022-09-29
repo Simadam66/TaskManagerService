@@ -8,7 +8,6 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Builder
 @ToString
@@ -38,7 +37,7 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "birthDate")
+    @Column(name = "birthdate")
     private LocalDate birthDate;
 
     @Transient
@@ -82,7 +81,7 @@ public class User {
 
     public void addTask(Task task) {
         tasks.add(task);
-        task.assignToUSer(this);
+        task.assignToUser(this);
     }
 
     public void removeTask(Task task) {

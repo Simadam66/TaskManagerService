@@ -46,10 +46,11 @@ public class TaskService {
         return newTask;
     }
 
-    public void deleteTask(Long userId, Long taskId) {
+    public boolean deleteTask(Long userId, Long taskId) {
         Task task = getTask(userId, taskId);
         userService.removeUserTask(userId, task);
         taskRepository.deleteById(taskId);
+        return true;
     }
 
     // TODO: transactional userre megvaltoztat

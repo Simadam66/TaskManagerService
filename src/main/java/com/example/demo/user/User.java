@@ -1,10 +1,14 @@
 package com.example.demo.user;
 
+import com.example.demo.task.Task;
 import lombok.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.List;
 
 @Builder
 @ToString
@@ -34,11 +38,17 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "birthDate")
+    @Column(name = "birthdate")
     private LocalDate birthDate;
 
     @Transient
     private Integer age;
+
+    @OneToMany(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Task> tasks = new ArrayList<>();
 
     public User(String name, String email, LocalDate birthDate) {
         this.name = name;
@@ -58,11 +68,20 @@ public class User {
                 .build();
     }
 
-    public User update(UserRequest userRequest) {
-        this.name = userRequest.getName();
-        this.email = userRequest.getEmail();
-        this.birthDate = userRequest.getBirthDate();
-        return this;
+    public boolean update(UserRequest userRequest) {
+        boolean equals = new EqualsBuilder()
+                .append(this.name, userRequest.getName())
+                .append(this.email, userRequest.getEmail())
+                .append(this.birthDate, userRequest.getBirthDate())
+                .isEquals();
+
+        if (!equals) {
+            this.name = userRequest.getName();
+            this.email = userRequest.getEmail();
+            this.birthDate = userRequest.getBirthDate();
+            return true;
+        }
+        return false;
 
         /*String newEmail = userRequest.getEmail();
         if (newEmail != null && !this.email.equals(newEmail)) {
@@ -70,4 +89,13 @@ public class User {
         }*/
     }
 
+    public void addTask(Task task) {
+        tasks.add(task);
+        task.assignToUser(this);
+    }
+
+    public void removeTask(Task task) {
+        tasks.remove(task);
+        task.removeFromUser();
+    }
 }

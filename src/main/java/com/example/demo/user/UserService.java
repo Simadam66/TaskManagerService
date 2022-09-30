@@ -1,9 +1,10 @@
 package com.example.demo.user;
 
+import com.example.demo.task.Task;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,8 +54,19 @@ public class UserService {
             }
         }
 
-        userToUpdate.update(userRequest);
-        userRepository.save(userToUpdate);
+        if (userToUpdate.update(userRequest)) {
+            userRepository.save(userToUpdate);
+        }
         return userToUpdate;
+    }
+
+    public boolean removeUserTask(Long userId, Task task) {
+        getUser(userId).removeTask(task);
+        return true;
+    }
+
+    public boolean addUserTask(Long userId, Task task) {
+        getUser(userId).addTask(task);
+        return true;
     }
 }

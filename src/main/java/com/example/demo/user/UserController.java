@@ -1,5 +1,6 @@
 package com.example.demo.user;
 
+import com.example.demo.task.TaskResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -51,8 +52,7 @@ public class UserController {
             @PathVariable("userId") Long userId,
             @RequestBody @Valid UserRequest userRequest) {
         User updatedUser = userService.updateUser(userId, userRequest);
-        UserResponse response = UserResponse.of(updatedUser);
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return ResponseEntity.ok(UserResponse.of(updatedUser));
     }
 
     //Obsolete implementation

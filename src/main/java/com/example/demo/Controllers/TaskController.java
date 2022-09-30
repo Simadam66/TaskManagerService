@@ -1,5 +1,9 @@
-package com.example.demo.task;
+package com.example.demo.Controllers;
 
+import com.example.demo.Models.Task;
+import com.example.demo.DTOs.TaskRequest;
+import com.example.demo.DTOs.TaskResponse;
+import com.example.demo.Services.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

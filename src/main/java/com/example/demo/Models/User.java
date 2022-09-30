@@ -1,6 +1,6 @@
-package com.example.demo.user;
+package com.example.demo.Models;
 
-import com.example.demo.task.Task;
+import com.example.demo.DTOs.UserRequest;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 

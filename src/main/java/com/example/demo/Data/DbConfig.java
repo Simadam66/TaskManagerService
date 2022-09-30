@@ -1,6 +1,8 @@
-package com.example.demo.user;
+package com.example.demo.Data;
 
-import com.example.demo.task.Task;
+import com.example.demo.Models.Task;
+import com.example.demo.Models.User;
+import com.example.demo.Repositories.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +13,7 @@ import java.util.List;
 import static java.time.Month.*;
 
 @Configuration
-public class UserConfig {
+public class DbConfig {
 
     @Bean(name = "userInitializerBean")
     CommandLineRunner commandLineRunner(UserRepository repository) {

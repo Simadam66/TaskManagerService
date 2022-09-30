@@ -1,6 +1,9 @@
-package com.example.demo.user;
+package com.example.demo.Controllers;
 
-import com.example.demo.task.TaskResponse;
+import com.example.demo.DTOs.TaskRequest;
+import com.example.demo.Models.User;
+import com.example.demo.DTOs.UserRequest;
+import com.example.demo.Services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,23 +24,23 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<UserResponse>> getUsers() {
+    public ResponseEntity<List<TaskRequest.UserResponse>> getUsers() {
         return ResponseEntity.ok(
                 userService.getUsers()
                         .stream()
-                        .map(UserResponse::of)
+                        .map(TaskRequest.UserResponse::of)
                         .toList());
     }
 
     @GetMapping(path = "{userId}")
-    public ResponseEntity<UserResponse> getUser(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(UserResponse.of(userService.getUser(userId)));
+    public ResponseEntity<TaskRequest.UserResponse> getUser(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(TaskRequest.UserResponse.of(userService.getUser(userId)));
     }
 
     @PostMapping
-    public ResponseEntity<UserResponse> registerNewUser(@RequestBody @Valid UserRequest userRequest) {
+    public ResponseEntity<TaskRequest.UserResponse> registerNewUser(@RequestBody @Valid UserRequest userRequest) {
         User newUser = userService.addNewUser(userRequest);
-        UserResponse response = UserResponse.of(newUser);
+        TaskRequest.UserResponse response = TaskRequest.UserResponse.of(newUser);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -48,11 +51,11 @@ public class UserController {
     }
 
     @PutMapping(path = "{userId}")
-    public ResponseEntity<UserResponse> updateUser(
+    public ResponseEntity<TaskRequest.UserResponse> updateUser(
             @PathVariable("userId") Long userId,
             @RequestBody @Valid UserRequest userRequest) {
         User updatedUser = userService.updateUser(userId, userRequest);
-        return ResponseEntity.ok(UserResponse.of(updatedUser));
+        return ResponseEntity.ok(TaskRequest.UserResponse.of(updatedUser));
     }
 
     //Obsolete implementation

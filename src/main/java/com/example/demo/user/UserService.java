@@ -54,14 +54,9 @@ public class UserService {
             }
         }
 
-        if (userToUpdate.getName() != userRequest.getName() ||
-            userToUpdate.getEmail() != userRequest.getEmail() ||
-            userToUpdate.getBirthDate() != userRequest.getBirthDate())
-        {
-            userToUpdate.update(userRequest);
+        if (userToUpdate.update(userRequest)) {
             userRepository.save(userToUpdate);
         }
-
         return userToUpdate;
     }
 

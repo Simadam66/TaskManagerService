@@ -2,6 +2,7 @@ package com.example.demo.task;
 
 import com.example.demo.user.User;
 import lombok.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -56,11 +57,19 @@ public class Task {
                 .build();
     }
 
-    public Task update(TaskRequest taskRequest) {
-        this.name = taskRequest.getName();
-        this.description = taskRequest.getDescription();
-        this.date_time = taskRequest.getDate_time();
-        return this;
+    public boolean update(TaskRequest taskRequest) {
+        boolean equals = new EqualsBuilder()
+                .append(this.name, taskRequest.getName())
+                .append(this.description, taskRequest.getDescription())
+                .append(this.date_time, taskRequest.getDate_time())
+                .isEquals();
+
+        if (!equals) {
+            this.name = taskRequest.getName();
+            this.description = taskRequest.getDescription();
+            this.date_time = taskRequest.getDate_time();
+        }
+        return !equals;
     }
 
     public void assignToUser(User user) {

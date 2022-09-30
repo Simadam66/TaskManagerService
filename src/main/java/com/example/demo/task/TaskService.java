@@ -55,15 +55,9 @@ public class TaskService {
     @Transactional
     public Task updateTask(Long userId, Long taskId, TaskRequest taskRequest) {
         Task taskToUpdate = getTask(userId, taskId);
-
-        if (taskToUpdate.getName() != taskRequest.getName() ||
-            taskToUpdate.getDescription() != taskRequest.getDescription() ||
-            taskToUpdate.getDate_time() != taskRequest.getDate_time())
-        {
-            taskToUpdate.update(taskRequest);
+        if (taskToUpdate.update(taskRequest)) {
             taskRepository.save(taskToUpdate);
         }
-
         return taskToUpdate;
     }
 

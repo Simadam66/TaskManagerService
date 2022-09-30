@@ -68,8 +68,9 @@ public class Task {
             this.name = taskRequest.getName();
             this.description = taskRequest.getDescription();
             this.date_time = taskRequest.getDate_time();
+            return true;
         }
-        return !equals;
+        return false;
     }
 
     public void assignToUser(User user) {

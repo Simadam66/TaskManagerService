@@ -79,8 +79,9 @@ public class User {
             this.name = userRequest.getName();
             this.email = userRequest.getEmail();
             this.birthDate = userRequest.getBirthDate();
+            return true;
         }
-        return !equals;
+        return false;
 
         /*String newEmail = userRequest.getEmail();
         if (newEmail != null && !this.email.equals(newEmail)) {

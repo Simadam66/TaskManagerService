@@ -1,5 +1,6 @@
-package com.example.demo.task;
+package com.example.demo.dto;
 
+import com.example.demo.model.task.Task;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 

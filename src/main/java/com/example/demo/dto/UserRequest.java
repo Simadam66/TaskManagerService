@@ -1,24 +1,22 @@
-package com.example.demo.task;
+package com.example.demo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Getter
-public class TaskRequest {
+public class UserRequest {
 
     @NotBlank(message = "name can not be blank")
     @JsonProperty("name")
     private String name;
 
-    @JsonProperty("description")
-    private String description;
+    @NotBlank(message = "email can not be blank")
+    @JsonProperty("email")
+    private String email;
 
-    @NotNull
-    @JsonProperty("date_time")
-    private LocalDate date_time;
-
+    @JsonProperty("birth_date")
+    private LocalDate birthDate;
 }

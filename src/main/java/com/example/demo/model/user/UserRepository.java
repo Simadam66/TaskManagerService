@@ -1,5 +1,6 @@
-package com.example.demo.user;
+package com.example.demo.model.user;
 
+import com.example.demo.model.user.User;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 

@@ -1,6 +1,9 @@
-package com.example.demo.user;
+package com.example.demo.service;
 
-import com.example.demo.task.Task;
+import com.example.demo.model.task.Task;
+import com.example.demo.model.user.User;
+import com.example.demo.model.user.UserRepository;
+import com.example.demo.dto.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

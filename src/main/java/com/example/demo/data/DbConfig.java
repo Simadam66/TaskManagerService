@@ -1,8 +1,8 @@
-package com.example.demo.Data;
+package com.example.demo.data;
 
-import com.example.demo.Models.Task;
-import com.example.demo.Models.User;
-import com.example.demo.Repositories.UserRepository;
+import com.example.demo.model.task.Task;
+import com.example.demo.model.user.User;
+import com.example.demo.model.user.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

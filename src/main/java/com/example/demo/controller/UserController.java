@@ -1,9 +1,9 @@
-package com.example.demo.Controllers;
+package com.example.demo.controller;
 
-import com.example.demo.DTOs.TaskRequest;
-import com.example.demo.Models.User;
-import com.example.demo.DTOs.UserRequest;
-import com.example.demo.Services.UserService;
+import com.example.demo.dto.UserResponse;
+import com.example.demo.model.user.User;
+import com.example.demo.dto.UserRequest;
+import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,23 +24,23 @@ public class UserController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TaskRequest.UserResponse>> getUsers() {
+    public ResponseEntity<List<UserResponse>> getUsers() {
         return ResponseEntity.ok(
                 userService.getUsers()
                         .stream()
-                        .map(TaskRequest.UserResponse::of)
+                        .map(UserResponse::of)
                         .toList());
     }
 
     @GetMapping(path = "{userId}")
-    public ResponseEntity<TaskRequest.UserResponse> getUser(@PathVariable("userId") Long userId) {
-        return ResponseEntity.ok(TaskRequest.UserResponse.of(userService.getUser(userId)));
+    public ResponseEntity<UserResponse> getUser(@PathVariable("userId") Long userId) {
+        return ResponseEntity.ok(UserResponse.of(userService.getUser(userId)));
     }
 
     @PostMapping
-    public ResponseEntity<TaskRequest.UserResponse> registerNewUser(@RequestBody @Valid UserRequest userRequest) {
+    public ResponseEntity<UserResponse> registerNewUser(@RequestBody @Valid UserRequest userRequest) {
         User newUser = userService.addNewUser(userRequest);
-        TaskRequest.UserResponse response = TaskRequest.UserResponse.of(newUser);
+        UserResponse response = UserResponse.of(newUser);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -51,11 +51,11 @@ public class UserController {
     }
 
     @PutMapping(path = "{userId}")
-    public ResponseEntity<TaskRequest.UserResponse> updateUser(
+    public ResponseEntity<UserResponse> updateUser(
             @PathVariable("userId") Long userId,
             @RequestBody @Valid UserRequest userRequest) {
         User updatedUser = userService.updateUser(userId, userRequest);
-        return ResponseEntity.ok(TaskRequest.UserResponse.of(updatedUser));
+        return ResponseEntity.ok(UserResponse.of(updatedUser));
     }
 
     //Obsolete implementation

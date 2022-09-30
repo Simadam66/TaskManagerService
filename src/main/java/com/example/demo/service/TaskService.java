@@ -1,8 +1,8 @@
-package com.example.demo.Services;
+package com.example.demo.service;
 
-import com.example.demo.Models.Task;
-import com.example.demo.Repositories.TaskRepository;
-import com.example.demo.DTOs.TaskRequest;
+import com.example.demo.model.task.Task;
+import com.example.demo.model.task.TaskRepository;
+import com.example.demo.dto.TaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

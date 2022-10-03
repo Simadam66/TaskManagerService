@@ -9,28 +9,28 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ApiExceptionHandler {
 
-    @ExceptionHandler(value = { EntityNotFoundException.class })
+    @ExceptionHandler(value = {EntityNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleEntityNotFoundException(EntityNotFoundException ex) {
-        return handleExceptionInternal(ex, new HttpHeaders(), HttpStatus.NOT_FOUND);
+        return handleExceptionInternal(ex, HttpStatus.NOT_FOUND);
     }
 
-    @ExceptionHandler(value = { EmailTakenException.class })
+    @ExceptionHandler(value = {EmailTakenException.class})
     public ResponseEntity<ErrorResponse> handleEmailTakenException(EmailTakenException ex) {
-        return handleExceptionInternal(ex, new HttpHeaders(), HttpStatus.CONFLICT);
+        return handleExceptionInternal(ex, HttpStatus.CONFLICT);
     }
 
-    @ExceptionHandler(value = { TaskMismatchException.class })
+    @ExceptionHandler(value = {TaskMismatchException.class})
     public ResponseEntity<ErrorResponse> handleTaskMismatchException(TaskMismatchException ex) {
-        return handleExceptionInternal(ex, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        return handleExceptionInternal(ex, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(value = { RuntimeException.class })
+    @ExceptionHandler(value = {RuntimeException.class})
     public ResponseEntity<ErrorResponse> handleRuntimeException(RuntimeException ex) {
-        return handleExceptionInternal(ex, new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return handleExceptionInternal(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    protected ResponseEntity<ErrorResponse> handleExceptionInternal(RuntimeException ex, HttpHeaders headers, HttpStatus status) {
-        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()),headers, status);
+    protected ResponseEntity<ErrorResponse> handleExceptionInternal(RuntimeException ex, HttpStatus status) {
+        return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), new HttpHeaders(), status);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.example.demo.exception;
 
 public class EmailTakenException extends RuntimeException {
-    public EmailTakenException() {
-        super("this email is already taken");
+    public EmailTakenException(String email) {
+        super("The email(" + email + ") is already taken.");
     }
 }

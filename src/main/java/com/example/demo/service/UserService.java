@@ -35,7 +35,7 @@ public class UserService {
     public User addNewUser(UserRequest userRequest) {
         Optional<User> userOptional = userRepository.findUserByEmail(userRequest.getEmail());
         if (userOptional.isPresent()) {
-            throw new EmailTakenException();
+            throw new EmailTakenException(userOptional.get().getEmail());
         }
         User userToSave = User.of(userRequest);
         userRepository.save(userToSave);

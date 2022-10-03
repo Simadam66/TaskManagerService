@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.EmailTakenException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.task.Task;
 import com.example.demo.model.user.User;
 import com.example.demo.model.user.UserRepository;
@@ -26,14 +28,14 @@ public class UserService {
 
     public User getUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalStateException("user with id " + userId + "does not exist"));
+                .orElseThrow(() -> new UserNotFoundException(userId));
         return user;
     }
 
     public User addNewUser(UserRequest userRequest) {
         Optional<User> userOptional = userRepository.findUserByEmail(userRequest.getEmail());
         if (userOptional.isPresent()) {
-            throw new IllegalStateException("email taken");
+            throw new EmailTakenException(userOptional.get().getEmail());
         }
         User userToSave = User.of(userRequest);
         userRepository.save(userToSave);

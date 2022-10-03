@@ -1,5 +1,7 @@
 package com.example.demo.service;
 
+import com.example.demo.exception.TaskNotFoundException;
+import com.example.demo.exception.TaskMismatchException;
 import com.example.demo.model.task.Task;
 import com.example.demo.model.task.TaskRepository;
 import com.example.demo.dto.TaskRequest;
@@ -30,11 +32,11 @@ public class TaskService {
         List<Task> UserTasks = getUserTasks(userId);
 
         taskRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalStateException("task with id " + taskId + " does not exist"));
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
 
         Optional<Task> task = UserTasks.stream().filter(t -> t.getId().equals(taskId)).findFirst();
         if (task.isEmpty()) {
-            throw new IllegalStateException("this user does not have a task with id: " + taskId);
+            throw new TaskMismatchException(taskId);
         }
 
         return task.get();

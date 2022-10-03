@@ -1,4 +1,4 @@
-package com.example.demo.exc;
+package com.example.demo.exception;
 
 public class TaskMismatchException extends RuntimeException {
     public TaskMismatchException(Long taskId) {

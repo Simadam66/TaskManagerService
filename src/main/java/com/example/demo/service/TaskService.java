@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.exc.TaskExistenceException;
-import com.example.demo.exc.TaskMismatchException;
+import com.example.demo.exception.TaskNotFoundException;
+import com.example.demo.exception.TaskMismatchException;
 import com.example.demo.model.task.Task;
 import com.example.demo.model.task.TaskRepository;
 import com.example.demo.dto.TaskRequest;
@@ -32,7 +32,7 @@ public class TaskService {
         List<Task> UserTasks = getUserTasks(userId);
 
         taskRepository.findById(taskId)
-                .orElseThrow(() -> new TaskExistenceException(taskId));
+                .orElseThrow(() -> new TaskNotFoundException(taskId));
 
         Optional<Task> task = UserTasks.stream().filter(t -> t.getId().equals(taskId)).findFirst();
         if (task.isEmpty()) {

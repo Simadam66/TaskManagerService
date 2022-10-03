@@ -1,7 +1,7 @@
 package com.example.demo.service;
 
-import com.example.demo.exc.EmailTakenException;
-import com.example.demo.exc.UserExistenceException;
+import com.example.demo.exception.EmailTakenException;
+import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.task.Task;
 import com.example.demo.model.user.User;
 import com.example.demo.model.user.UserRepository;
@@ -28,7 +28,7 @@ public class UserService {
 
     public User getUser(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserExistenceException(userId));
+                .orElseThrow(() -> new UserNotFoundException(userId));
         return user;
     }
 

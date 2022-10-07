@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
+@EqualsAndHashCode(exclude = "id")
 public class User {
 
     @Id

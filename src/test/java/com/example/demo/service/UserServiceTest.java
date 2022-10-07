@@ -1,16 +1,24 @@
 package com.example.demo.service;
 
+import com.example.demo.dto.UserRequest;
+import com.example.demo.exception.EmailTakenException;
+import com.example.demo.exception.UserNotFoundException;
+import com.example.demo.model.user.User;
 import com.example.demo.model.user.UserRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDate;
+import java.util.Optional;
+
+import static java.time.Month.*;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -21,51 +29,105 @@ class UserServiceTest {
     @InjectMocks
     UserService service;
 
+    private static final Long USER_ID_1 = 1L;
+    private static final User USER_1 =
+            User.builder().name("Laci").email("laci@freemail.com").birthDate(LocalDate.of(1997, JANUARY, 12)).build();
+
+    private static final UserRequest USER_1_REQUEST =
+            UserRequest.builder().name("Laci").email("laci@freemail.com").birthDate(LocalDate.of(1997, JANUARY, 12)).build();
+
+    private static final UserRequest USER_1_REQUEST_MOD =
+            UserRequest.builder().name("Laci").email("lacesz@freemail.com").birthDate(LocalDate.of(1997, JANUARY, 12)).build();
+
+    private static final User USER_2 =
+            User.builder().name("Laszlo").email("lacesz@freemail.com").birthDate(LocalDate.of(2001, SEPTEMBER, 4)).build();
+
+    private static final String USER_EMAIL = "randomail@citromail.hu";
+
     @BeforeEach
     void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
+        USER_1.update(USER_1_REQUEST);
     }
 
     @Test
-    void canGetUsers() {
-        // given
+    void getUsersReturnsAllOfTheUsers() {
+        service.getUsers();
 
-        // when
-
-        // then
-
+        verify(repo, times(1)).findAll();
     }
 
     @Test
-    @Disabled
-    void getUser() {
+    void getUserThrowsUserNotFoundException() {
+        when(repo.findById(anyLong())).thenReturn(Optional.empty());
+
+        UserNotFoundException exc = assertThrows(UserNotFoundException.class, () -> service.getUser(USER_ID_1));
+        assertEquals("User with id " + USER_ID_1 + " does not exist.", exc.getMessage());
     }
 
     @Test
-    @Disabled
-    void addNewUser() {
+    void getUserReturnsRightUser() {
+        when(repo.findById(anyLong())).thenReturn(Optional.of(USER_1));
+
+        User user = service.getUser(USER_ID_1);
+
+        verify(repo, times(1)).findById(USER_ID_1);
+        assertEquals(USER_1, user);
+    }
+
+
+    @Test
+    void addNewUserThrowsEmailTakenException() {
+        when(repo.findUserByEmail(USER_1_REQUEST.getEmail())).thenReturn(Optional.of(USER_1));
+
+        EmailTakenException exc = assertThrows(EmailTakenException.class, () -> service.addNewUser(USER_1_REQUEST));
+        assertEquals("The email(" + USER_1_REQUEST.getEmail() + ") is already taken.", exc.getMessage());
+        verify(repo, never()).save(any());
     }
 
     @Test
-    @Disabled
-    void deleteUser() {
+    void addNewUserAddsANewUser() {
+        when(repo.findUserByEmail(USER_1_REQUEST.getEmail())).thenReturn(Optional.empty());
+
+        User user = service.addNewUser(USER_1_REQUEST);
+
+        verify(repo, times(1)).findUserByEmail(USER_1_REQUEST.getEmail());
+        verify(repo, times(1)).save(user);
+        assertEquals(USER_1, user);
     }
 
     @Test
-    @Disabled
-    void updateUser() {
+    void updateUserThrowsEmailTakenException() {
+        when(repo.findById(any())).thenReturn(Optional.of(USER_1));
+        when(repo.findUserByEmail(USER_1_REQUEST_MOD.getEmail())).thenReturn(Optional.of(USER_2));
+
+        EmailTakenException exc = assertThrows(EmailTakenException.class, () -> service.updateUser(USER_ID_1 ,USER_1_REQUEST_MOD));
+        assertEquals("The email(" + USER_1_REQUEST_MOD.getEmail() + ") is already taken.", exc.getMessage());
+        verify(repo, times(1)).findUserByEmail(USER_1_REQUEST_MOD.getEmail());
+        verify(repo, never()).save(any());
     }
 
     @Test
-    @Disabled
-    void removeUserTask() {
+    void updateUserUpdatesUsersNewEmailAddress() {
+        when(repo.findById(any())).thenReturn(Optional.of(USER_1));
+        when(repo.findUserByEmail(USER_1_REQUEST_MOD.getEmail())).thenReturn(Optional.empty());
+
+        service.updateUser(USER_ID_1, USER_1_REQUEST_MOD);
+
+        verify(repo, times(1)).findUserByEmail(USER_1_REQUEST_MOD.getEmail());
+        verify(repo, times(1)).save(any());
+        assertEquals(USER_1_REQUEST_MOD.getEmail(), USER_1.getEmail());
     }
 
     @Test
-    @Disabled
-    void addUserTask() {
+    void updateUserDoesNotUpdateAnyFieldOfTheUserBasedOnTheRequest() {
+        when(repo.findById(any())).thenReturn(Optional.of(USER_1));
+
+        service.updateUser(USER_ID_1, USER_1_REQUEST);
+
+        verify(repo, never()).findUserByEmail(any());
+        verify(repo, never()).save(any());
+        assertEquals(USER_1_REQUEST.getEmail(), USER_1.getEmail());
     }
+
+
 }

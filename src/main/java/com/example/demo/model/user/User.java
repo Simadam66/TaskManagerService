@@ -52,12 +52,6 @@ public class User {
             orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
 
-    public User(String name, String email, LocalDate birthDate) {
-        this.name = name;
-        this.email = email;
-        this.birthDate = birthDate;
-    }
-
     public Integer getAge() {
         return Period.between(this.birthDate, LocalDate.now()).getYears();
     }

@@ -44,12 +44,6 @@ public class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 
-    public Task(String name, String description, LocalDate date_time) {
-        this.name = name;
-        this.description = description;
-        this.date_time = date_time;
-    }
-
     public static Task of(TaskRequest taskRequest) {
         return Task.builder()
                 .name(taskRequest.getName())

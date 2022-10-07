@@ -5,8 +5,6 @@ import com.example.demo.exception.EmailTakenException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.user.User;
 import com.example.demo.model.user.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
@@ -31,23 +29,32 @@ class UserServiceTest {
 
     private static final Long USER_ID_1 = 1L;
     private static final User USER_1 =
-            User.builder().name("Laci").email("laci@freemail.com").birthDate(LocalDate.of(1997, JANUARY, 12)).build();
+            User.builder()
+                    .name("Laci")
+                    .email("laci@freemail.com")
+                    .birthDate(LocalDate.of(1997, JANUARY, 12))
+                    .build();
 
     private static final UserRequest USER_1_REQUEST =
-            UserRequest.builder().name("Laci").email("laci@freemail.com").birthDate(LocalDate.of(1997, JANUARY, 12)).build();
+            UserRequest.builder()
+                    .name("Laci")
+                    .email("laci@freemail.com")
+                    .birthDate(LocalDate.of(1997, JANUARY, 12))
+                    .build();
 
     private static final UserRequest USER_1_REQUEST_MOD =
-            UserRequest.builder().name("Laci").email("lacesz@freemail.com").birthDate(LocalDate.of(1997, JANUARY, 12)).build();
+            UserRequest.builder()
+                    .name("Laci")
+                    .email("lacesz@freemail.com")
+                    .birthDate(LocalDate.of(1997, JANUARY, 12))
+                    .build();
 
     private static final User USER_2 =
-            User.builder().name("Laszlo").email("lacesz@freemail.com").birthDate(LocalDate.of(2001, SEPTEMBER, 4)).build();
-
-    private static final String USER_EMAIL = "randomail@citromail.hu";
-
-    @BeforeEach
-    void setUp() {
-        USER_1.update(USER_1_REQUEST);
-    }
+            User.builder()
+                    .name("Laszlo")
+                    .email("lacesz@freemail.com")
+                    .birthDate(LocalDate.of(2001, SEPTEMBER, 4))
+                    .build();
 
     @Test
     void getUsersReturnsAllOfTheUsers() {
@@ -120,14 +127,17 @@ class UserServiceTest {
 
     @Test
     void updateUserDoesNotUpdateAnyFieldOfTheUserBasedOnTheRequest() {
-        when(repo.findById(any())).thenReturn(Optional.of(USER_1));
+        User userToUpdate = User.builder()
+                .name("Laci")
+                .email("laci@freemail.com")
+                .birthDate(LocalDate.of(1997, JANUARY, 12)).build();
+        when(repo.findById(any())).thenReturn(Optional.of(userToUpdate));
 
-        service.updateUser(USER_ID_1, USER_1_REQUEST);
+        service.updateUser(userToUpdate.getId(), USER_1_REQUEST);
 
         verify(repo, never()).findUserByEmail(any());
         verify(repo, never()).save(any());
-        assertEquals(USER_1_REQUEST.getEmail(), USER_1.getEmail());
+        assertEquals(USER_1_REQUEST.getEmail(), userToUpdate.getEmail());
     }
-
 
 }

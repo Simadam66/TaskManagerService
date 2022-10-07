@@ -18,6 +18,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
+@EqualsAndHashCode(exclude = "id")
 public class User {
 
     @Id
@@ -50,12 +51,6 @@ public class User {
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Task> tasks = new ArrayList<>();
-
-    public User(String name, String email, LocalDate birthDate) {
-        this.name = name;
-        this.email = email;
-        this.birthDate = birthDate;
-    }
 
     public Integer getAge() {
         return Period.between(this.birthDate, LocalDate.now()).getYears();

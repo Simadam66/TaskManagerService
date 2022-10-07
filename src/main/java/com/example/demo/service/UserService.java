@@ -55,7 +55,7 @@ public class UserService {
         if (!userToUpdate.getEmail().equals(userRequest.getEmail())) {
             Optional<User> userOptional = userRepository.findUserByEmail(userRequest.getEmail());
             if (userOptional.isPresent()) {
-                throw new IllegalStateException("email taken");
+                throw new EmailTakenException(userOptional.get().getEmail());
             }
         }
 

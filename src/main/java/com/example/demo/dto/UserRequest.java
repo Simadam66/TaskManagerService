@@ -1,11 +1,15 @@
 package com.example.demo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDate;
 
+@Builder
+@AllArgsConstructor
 @Getter
 public class UserRequest {
 

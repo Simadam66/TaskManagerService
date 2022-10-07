@@ -115,29 +115,29 @@ class UserServiceTest {
 
     @Test
     void updateUserUpdatesUsersNewEmailAddress() {
-        when(repo.findById(any())).thenReturn(Optional.of(USER_1));
+        User userToUpdate = User.builder()
+                .name("Laci")
+                .email("laci@freemail.com")
+                .birthDate(LocalDate.of(1997, JANUARY, 12)).build();
+        when(repo.findById(any())).thenReturn(Optional.of(userToUpdate));
         when(repo.findUserByEmail(USER_1_REQUEST_MOD.getEmail())).thenReturn(Optional.empty());
 
         service.updateUser(USER_ID_1, USER_1_REQUEST_MOD);
 
         verify(repo, times(1)).findUserByEmail(USER_1_REQUEST_MOD.getEmail());
         verify(repo, times(1)).save(any());
-        assertEquals(USER_1_REQUEST_MOD.getEmail(), USER_1.getEmail());
+        assertEquals(USER_1_REQUEST_MOD.getEmail(), userToUpdate.getEmail());
     }
 
     @Test
     void updateUserDoesNotUpdateAnyFieldOfTheUserBasedOnTheRequest() {
-        User userToUpdate = User.builder()
-                .name("Laci")
-                .email("laci@freemail.com")
-                .birthDate(LocalDate.of(1997, JANUARY, 12)).build();
-        when(repo.findById(any())).thenReturn(Optional.of(userToUpdate));
+        when(repo.findById(any())).thenReturn(Optional.of(USER_1));
 
-        service.updateUser(userToUpdate.getId(), USER_1_REQUEST);
+        service.updateUser(USER_1.getId(), USER_1_REQUEST);
 
         verify(repo, never()).findUserByEmail(any());
         verify(repo, never()).save(any());
-        assertEquals(USER_1_REQUEST.getEmail(), userToUpdate.getEmail());
+        assertEquals(USER_1_REQUEST.getEmail(), USER_1.getEmail());
     }
 
 }

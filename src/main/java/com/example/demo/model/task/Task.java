@@ -35,6 +35,7 @@ public class Task {
     @Column(name = "name")
     private String name;
 
+    // TODO: rename to date, and also in dto-s
     @Column(name = "description")
     private String description;
 

@@ -29,12 +29,12 @@ public class TaskService {
     }
 
     public Task getTask(Long userId, Long taskId) {
-        List<Task> UserTasks = getUserTasks(userId);
+        List<Task> userTasks = getUserTasks(userId);
 
         taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(taskId));
 
-        Optional<Task> task = UserTasks.stream().filter(t -> t.getId().equals(taskId)).findFirst();
+        Optional<Task> task = userTasks.stream().filter(t -> t.getId().equals(taskId)).findFirst();
         if (task.isEmpty()) {
             throw new TaskMismatchException(taskId);
         }

@@ -20,7 +20,7 @@ public class TaskRequest {
     private String description;
 
     @NotNull
-    @JsonProperty("date_time")
-    private LocalDate date_time;
+    @JsonProperty("date")
+    private LocalDate date;
 
 }

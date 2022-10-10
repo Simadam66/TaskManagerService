@@ -40,19 +40,19 @@ public class DbConfig {
             Task task1 = Task.builder()
                     .name("Birthday")
                     .description("Buy a cake for Toms birthday")
-                    .date_time(LocalDate.of(2022, OCTOBER, 5))
+                    .date(LocalDate.of(2022, OCTOBER, 5))
                     .build();
 
             Task task2 = Task.builder()
                     .name("Cleaning")
                     .description("Dust the shelf and tables in the meeting room")
-                    .date_time(LocalDate.of(2022, SEPTEMBER, 20))
+                    .date(LocalDate.of(2022, SEPTEMBER, 20))
                     .build();
 
             Task task3 = Task.builder()
                     .name("Code review")
                     .description("Look for typos in George's code")
-                    .date_time(LocalDate.of(2022, OCTOBER, 5))
+                    .date(LocalDate.of(2022, OCTOBER, 5))
                     .build();
 
             mariah.addTask(task1);

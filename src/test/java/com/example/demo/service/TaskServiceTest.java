@@ -1,10 +1,8 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.TaskRequest;
-import com.example.demo.dto.UserRequest;
 import com.example.demo.exception.TaskMismatchException;
 import com.example.demo.exception.TaskNotFoundException;
-import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.task.Task;
 import com.example.demo.model.task.TaskRepository;
 import com.example.demo.model.user.User;
@@ -52,21 +50,21 @@ class TaskServiceTest {
                     .id(1L)
                     .name("Birthday")
                     .description("Buy a cake for Toms birthday")
-                    .date_time(LocalDate.of(2022, OCTOBER, 5))
+                    .date(LocalDate.of(2022, OCTOBER, 5))
                     .build();
 
     private static final TaskRequest TASK_1_REQUEST_SAME =
             TaskRequest.builder()
                     .name("Birthday")
                     .description("Buy a cake for Toms birthday")
-                    .date_time(LocalDate.of(2022, OCTOBER, 5))
+                    .date(LocalDate.of(2022, OCTOBER, 5))
                     .build();
 
     private static final TaskRequest TASK_1_REQUEST_MOD =
             TaskRequest.builder()
                     .name("B-Day")
                     .description("Buy a cake for Tommy birthday")
-                    .date_time(LocalDate.of(2022, OCTOBER, 5))
+                    .date(LocalDate.of(2022, OCTOBER, 5))
                     .build();
 
     @Test
@@ -126,7 +124,7 @@ class TaskServiceTest {
 
         assertEquals(TASK_1_REQUEST_SAME.getName(), result.getName());
         assertEquals(TASK_1_REQUEST_SAME.getDescription(), result.getDescription());
-        assertEquals(TASK_1_REQUEST_SAME.getDate_time(), result.getDate_time());
+        assertEquals(TASK_1_REQUEST_SAME.getDate(), result.getDate());
         verify(taskRepository, never()).save(any());
     }
 
@@ -144,7 +142,7 @@ class TaskServiceTest {
                 .id(1L)
                 .name("Birthday")
                 .description("Buy a cake for Toms birthday")
-                .date_time(LocalDate.of(2022, OCTOBER, 5))
+                .date(LocalDate.of(2022, OCTOBER, 5))
                 .build();
 
         userWithTask1.addTask(taskToUpdate);
@@ -155,7 +153,7 @@ class TaskServiceTest {
 
         assertEquals(TASK_1_REQUEST_MOD.getName(), result.getName());
         assertEquals(TASK_1_REQUEST_MOD.getDescription(), result.getDescription());
-        assertEquals(TASK_1_REQUEST_MOD.getDate_time(), result.getDate_time());
+        assertEquals(TASK_1_REQUEST_MOD.getDate(), result.getDate());
         verify(taskRepository, times(1)).save(taskToUpdate);
     }
 }

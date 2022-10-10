@@ -18,15 +18,15 @@ public class TaskResponse {
     @JsonProperty("description")
     private String description;
 
-    @JsonProperty("date_time")
-    private LocalDate date_time;
+    @JsonProperty("date")
+    private LocalDate date;
 
     public static TaskResponse of(Task task) {
         return TaskResponse.builder()
                 .id(task.getId())
                 .name(task.getName())
                 .description(task.getDescription())
-                .date_time(task.getDate_time())
+                .date(task.getDate())
                 .build();
     }
 }

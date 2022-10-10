@@ -38,8 +38,8 @@ public class Task {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "date_time")
-    private LocalDate date_time;
+    @Column(name = "date")
+    private LocalDate date;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
@@ -48,7 +48,7 @@ public class Task {
         return Task.builder()
                 .name(taskRequest.getName())
                 .description(taskRequest.getDescription())
-                .date_time(taskRequest.getDate_time())
+                .date(taskRequest.getDate())
                 .build();
     }
 
@@ -56,13 +56,13 @@ public class Task {
         boolean equals = new EqualsBuilder()
                 .append(this.name, taskRequest.getName())
                 .append(this.description, taskRequest.getDescription())
-                .append(this.date_time, taskRequest.getDate_time())
+                .append(this.date, taskRequest.getDate())
                 .isEquals();
 
         if (!equals) {
             this.name = taskRequest.getName();
             this.description = taskRequest.getDescription();
-            this.date_time = taskRequest.getDate_time();
+            this.date = taskRequest.getDate();
             return true;
         }
         return false;

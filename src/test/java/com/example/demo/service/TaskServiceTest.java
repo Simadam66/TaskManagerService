@@ -6,10 +6,8 @@ import com.example.demo.exception.TaskNotFoundException;
 import com.example.demo.model.task.Task;
 import com.example.demo.model.task.TaskRepository;
 import com.example.demo.model.user.User;
-import org.checkerframework.checker.nullness.Opt;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -88,7 +86,7 @@ class TaskServiceTest {
                     .build();
 
     @BeforeAll
-    static void init(){
+    static void init() {
         USER_WITH_TASK2.addTask(TASK_2);
     }
 

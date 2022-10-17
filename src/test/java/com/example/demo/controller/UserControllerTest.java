@@ -14,6 +14,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,7 +32,7 @@ import static java.time.Month.FEBRUARY;
 import static java.time.Month.JANUARY;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.InstanceOfAssertFactories.OPTIONAL;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,6 +57,15 @@ class UserControllerTest {
                     .id(1L)
                     .name("Laci")
                     .email("laci@freemail.com")
+                    .birthDate(LocalDate.of(1997, JANUARY, 12))
+                    .tasks(new ArrayList<>())
+                    .build();
+
+    private static final User USER_1_MOD =
+            User.builder()
+                    .id(1L)
+                    .name("Laci")
+                    .email("laca@freemail.com")
                     .birthDate(LocalDate.of(1997, JANUARY, 12))
                     .tasks(new ArrayList<>())
                     .build();
@@ -107,6 +117,13 @@ class UserControllerTest {
                     .birthDate(LocalDate.of(1997, JANUARY, 12))
                     .build();
 
+    private static final UserRequest BAD_USER_REQUEST =
+            UserRequest.builder()
+                    .name("")
+                    .email("valami@freemail.com")
+                    .birthDate(LocalDate.of(2005, JANUARY, 12))
+                    .build();
+
     private static final ArrayList<User> USER_LIST = new ArrayList<User>();
 
     @BeforeAll
@@ -151,19 +168,15 @@ class UserControllerTest {
                 .andExpect(status().isOk());
     }
 
-    // TODO: 200-at ad vissza pedig nem azt kene
     @Test
-    @Disabled
     void deleteUserCalledWithNonExistentUserId() throws Exception {
-        when(service.getUser(16L)).thenThrow(new UserNotFoundException(16L));
+        when(service.deleteUser(16L)).thenThrow(new UserNotFoundException(16L));
 
         mockMvc.perform(delete("/api/v1/user/16"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("error_message").value("User with id 16 does not exist."));
     }
 
-
-    // TODO: mokkolas megbesz, any()
     @Test
     void registerUserReturnsOk() throws Exception {
         when(service.addNewUser(any())).thenReturn(USER_1);
@@ -176,7 +189,6 @@ class UserControllerTest {
                         .string(objectMapper.writeValueAsString(USER_1_RESPONSE)));
     }
 
-    // TODO: invalid userinput esete?
     @Test
     void registerUserThrowsEmailTakenException() throws Exception {
         when(service.addNewUser(any())).thenThrow(new EmailTakenException("laci@freemail.com"));
@@ -187,20 +199,65 @@ class UserControllerTest {
                 .andExpect(status().isConflict())
                 .andExpect(jsonPath("error_message")
                         .value("The email(laci@freemail.com) is already taken."));
-
     }
 
-    // TODO kijavit
+    // TODO: validation message, tobbi eset tesztel
+    @Test
+    void registerUserCalledWithInvalidInput() throws Exception {
+        mockMvc.perform(post("/api/v1/user")
+                        .content(objectMapper.writeValueAsString(BAD_USER_REQUEST))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+                //.andExpect(jsonPath("message")
+                //        .value("Validation failed for object='userRequest'. Error count: 1"));
+    }
+
+
     @Test
     void updateUserReturnsOk() throws Exception {
-        when(service.updateUser(USER_1.getId(), USER_1_REQUEST_MOD)).thenReturn(USER_1);
+        when(service.updateUser(eq(1L), any())).thenReturn(USER_1_MOD);
 
         mockMvc.perform(put("/api/v1/user/1")
-                .content(objectMapper.writeValueAsString(USER_1_REQUEST_MOD))
-                .contentType(MediaType.APPLICATION_JSON))
+                        .content(objectMapper.writeValueAsString(USER_1_REQUEST_MOD))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content()
                         .string(objectMapper.writeValueAsString(USER_1_RESPONSE_MOD)));
+    }
+
+    @Test
+    void updateUserThrowsUserNotFoundException() throws Exception {
+        when(service.updateUser(anyLong(), any())).thenThrow(new UserNotFoundException(16L));
+
+        mockMvc.perform(put("/api/v1/user/16")
+                        .content(objectMapper.writeValueAsString(USER_1_REQUEST))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("error_message")
+                        .value("User with id 16 does not exist."));
+    }
+
+    @Test
+    void updateUserThrowsEmailTakenException() throws Exception {
+        when(service.updateUser(anyLong(), any())).thenThrow(new EmailTakenException(USER_1_REQUEST.getEmail()));
+
+        mockMvc.perform(put("/api/v1/user/1")
+                        .content(objectMapper.writeValueAsString(USER_1_REQUEST))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("error_message")
+                        .value("The email(laci@freemail.com) is already taken."));
+    }
+
+    // TODO: validation message, tobbi eset tesztel
+    @Test
+    void updateUserCalledWithInvalidInput() throws Exception {
+        mockMvc.perform(put("/api/v1/user/1")
+                        .content(objectMapper.writeValueAsString(BAD_USER_REQUEST))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+        //.andExpect(jsonPath("message")
+        //        .value("Validation failed for object='userRequest'. Error count: 1"));
     }
 
 }

@@ -124,6 +124,13 @@ class UserControllerTest {
                     .birthDate(LocalDate.of(2005, JANUARY, 12))
                     .build();
 
+    private static final UserRequest BAD_USER_REQUEST_2 =
+            UserRequest.builder()
+                    .name("")
+                    .email("")
+                    .birthDate(LocalDate.of(2005, JANUARY, 12))
+                    .build();
+
     private static final ArrayList<User> USER_LIST = new ArrayList<User>();
 
     @BeforeAll
@@ -201,15 +208,27 @@ class UserControllerTest {
                         .value("The email(laci@freemail.com) is already taken."));
     }
 
-    // TODO: validation message, tobbi eset tesztel
     @Test
-    void registerUserCalledWithInvalidInput() throws Exception {
+    void registerUserCalledWithInvalidNameInput() throws Exception {
         mockMvc.perform(post("/api/v1/user")
                         .content(objectMapper.writeValueAsString(BAD_USER_REQUEST))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-                //.andExpect(jsonPath("message")
-                //        .value("Validation failed for object='userRequest'. Error count: 1"));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("error_message")
+                        .value("Error: The field \"name\" is invalid, reason: name can not be blank"));
+    }
+
+    @Test
+    void registerUserCalledWithInvalidNameAndEmailInput() throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/v1/user")
+                        .content(objectMapper.writeValueAsString(BAD_USER_REQUEST_2))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        assertTrue(result.getResponse().getContentAsString()
+                .contains("Error: The field \\\"email\\\" is invalid, reason: email can not be blank"));
+        assertTrue(result.getResponse().getContentAsString()
+                .contains("Error: The field \\\"name\\\" is invalid, reason: name can not be blank"));
     }
 
 
@@ -249,15 +268,28 @@ class UserControllerTest {
                         .value("The email(laci@freemail.com) is already taken."));
     }
 
-    // TODO: validation message, tobbi eset tesztel
     @Test
-    void updateUserCalledWithInvalidInput() throws Exception {
+    void updateUserCalledWithInvalidNameInput() throws Exception {
         mockMvc.perform(put("/api/v1/user/1")
                         .content(objectMapper.writeValueAsString(BAD_USER_REQUEST))
                         .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isBadRequest());
-        //.andExpect(jsonPath("message")
-        //        .value("Validation failed for object='userRequest'. Error count: 1"));
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("error_message")
+                        .value("Error: The field \"name\" is invalid, reason: name can not be blank"));
+    }
+
+    @Test
+    void updateUserCalledWithInvalidNameAndEmailInput() throws Exception {
+        MvcResult result = mockMvc.perform(put("/api/v1/user/1")
+                        .content(objectMapper.writeValueAsString(BAD_USER_REQUEST_2))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        assertTrue(result.getResponse().getContentAsString()
+                .contains("Error: The field \\\"email\\\" is invalid, reason: email can not be blank"));
+        assertTrue(result.getResponse().getContentAsString()
+                .contains("Error: The field \\\"name\\\" is invalid, reason: name can not be blank"));
+
     }
 
 }

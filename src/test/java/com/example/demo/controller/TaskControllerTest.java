@@ -1,8 +1,8 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.TaskRequest;
 import com.example.demo.dto.TaskResponse;
 import com.example.demo.dto.UserRequest;
-import com.example.demo.dto.UserResponse;
 import com.example.demo.exception.TaskMismatchException;
 import com.example.demo.exception.TaskNotFoundException;
 import com.example.demo.exception.UserNotFoundException;
@@ -10,25 +10,26 @@ import com.example.demo.model.task.Task;
 import com.example.demo.model.user.User;
 import com.example.demo.service.TaskService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.xml.bind.v2.TODO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.Month.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ExtendWith(SpringExtension.class)
@@ -82,6 +83,24 @@ class TaskControllerTest {
                     .name("Pancake")
                     .description("Make Pancakes with jam")
                     .date(LocalDate.of(2022, DECEMBER, 23))
+                    .build();
+
+    private static final TaskRequest TASK_1_REQUEST =
+            TaskRequest.builder()
+                    .name("Birthday")
+                    .description("Buy a cake for Toms birthday")
+                    .date(LocalDate.of(2022, OCTOBER, 5))
+                    .build();
+
+    private static final TaskRequest BAD_TASK_REQUEST =
+            TaskRequest.builder()
+                    .name("B-day")
+                    .description("Buy a cake for Tommy birthday")
+                    .build();
+
+    private static final TaskRequest BAD_TASK_REQUEST_2 =
+            TaskRequest.builder()
+                    .description("Buy a cake for Tommy birthday")
                     .build();
 
     @BeforeAll
@@ -183,47 +202,119 @@ class TaskControllerTest {
 
     @Test
     void registerNewTaskReturnsOk() throws Exception {
+        when(taskService.addNewTask(anyLong(), any())).thenReturn(TASK_1);
 
+        mockMvc.perform(post("/api/v1/user/1/task")
+                        .content(objectMapper.writeValueAsString(TASK_1_REQUEST))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isCreated())
+                .andExpect(content()
+                        .string(objectMapper.writeValueAsString(TASK_1_RESPONSE)));
     }
 
-    //TODO: folyt
     @Test
     void registerNewTaskThrowsUserNotFoundException() throws Exception {
-        //when(taskService.addNewTask(any(), any())).thenThrow(new UserNotFoundException(2L));
-        //"User with id " + userId + " does not exist."
+        when(taskService.addNewTask(anyLong(), any())).thenThrow(new UserNotFoundException(1L));
+
+        mockMvc.perform(post("/api/v1/user/1/task")
+                .content(objectMapper.writeValueAsString(TASK_1_REQUEST))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("error_message").value("User with id 1 does not exist."));
     }
 
-    // TODO: validation message, tobbi eset tesztel
     @Test
-    void registerNewTaskCalledWithInvalidInput() throws Exception {
+    void registerNewTaskCalledWithInvalidDateInput() throws Exception {
 
+        mockMvc.perform(post("/api/v1/user/1/task")
+                        .content(objectMapper.writeValueAsString(BAD_TASK_REQUEST))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("error_message")
+                        .value("Error: The field \"date\" is invalid, reason: date can not be null"));
     }
 
-    ////////////////////////////////////////////////////////////////////////
+    @Test
+    void registerNewTaskCalledWithInvalidDateAndNameInput() throws Exception {
+
+        MvcResult result = mockMvc.perform(post("/api/v1/user/1/task")
+                        .content(objectMapper.writeValueAsString(BAD_TASK_REQUEST_2))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        assertTrue(result.getResponse().getContentAsString()
+                .contains("Error: The field \\\"date\\\" is invalid, reason: date can not be null"));
+        assertTrue(result.getResponse().getContentAsString()
+                .contains("Error: The field \\\"name\\\" is invalid, reason: name can not be blank"));
+    }
 
     @Test
     void updateTaskReturnsOk() throws Exception {
+        when(taskService.updateTask(any(), any(), any())).thenReturn(TASK_1);
 
+        mockMvc.perform(put("/api/v1/user/1/task/1")
+                        .content(objectMapper.writeValueAsString(TASK_1_REQUEST))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content()
+                        .string(objectMapper.writeValueAsString(TASK_1_RESPONSE)));
     }
 
     @Test
     void updateTaskThrowsThrowsUserNotFoundException() throws Exception {
-        //"User with id " + userId + " does not exist."
+        when(taskService.updateTask(any(), any(), any())).thenThrow(new UserNotFoundException(1L));
+
+        mockMvc.perform(put("/api/v1/user/1/task/1")
+                .content(objectMapper.writeValueAsString(TASK_1_REQUEST))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("error_message").value("User with id 1 does not exist."));
     }
 
     @Test
     void updateTaskThrowsTaskNotFoundException() throws Exception {
-        //"Task with id " + taskId + " does not exist."
+        when(taskService.updateTask(any(), any(), any())).thenThrow(new TaskNotFoundException(2L));
+
+        mockMvc.perform(put("/api/v1/user/1/task/2")
+                .content(objectMapper.writeValueAsString(TASK_1_REQUEST))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("error_message").value("Task with id 2 does not exist."));
     }
 
     @Test
     void updateTaskThrowsTaskMismatchException() throws Exception {
-        //"This user does not have a task with id: " + taskId + "."
+        when(taskService.updateTask(any(), any(), any())).thenThrow(new TaskMismatchException(2L));
+
+        mockMvc.perform(put("/api/v1/user/1/task/2")
+                .content(objectMapper.writeValueAsString(TASK_1_REQUEST))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("error_message").value("This user does not have a task with id: 2."));
     }
 
-    // TODO: validation message, tobbi eset tesztel
     @Test
-    void updateTaskCalledWithInvalidInput() throws Exception {
-
+    void updateTaskCalledWithInvalidDateInput() throws Exception {
+        mockMvc.perform(put("/api/v1/user/1/task/1")
+                        .content(objectMapper.writeValueAsString(BAD_TASK_REQUEST))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("error_message")
+                        .value("Error: The field \"date\" is invalid, reason: date can not be null"));
     }
+
+    @Test
+    void updateTaskCalledWithInvalidDateAndNameInput() throws Exception {
+        MvcResult result = mockMvc.perform(put("/api/v1/user/1/task/1")
+                        .content(objectMapper.writeValueAsString(BAD_TASK_REQUEST_2))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest()).andReturn();
+
+        assertTrue(result.getResponse().getContentAsString()
+                .contains("Error: The field \\\"date\\\" is invalid, reason: date can not be null"));
+        assertTrue(result.getResponse().getContentAsString()
+                .contains("Error: The field \\\"name\\\" is invalid, reason: name can not be blank"));
+    }
+
+
 }

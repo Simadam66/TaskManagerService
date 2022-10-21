@@ -169,7 +169,7 @@ class UserControllerTest {
 
     @Test
     void deleteUserReturnsOk() throws Exception {
-        when(service.getUser(1L)).thenReturn(USER_1);
+        when(service.deleteUser(1L)).thenReturn(true);
 
         mockMvc.perform(delete("/api/v1/user/1"))
                 .andExpect(status().isOk());

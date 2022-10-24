@@ -19,7 +19,7 @@ public class TaskRequest {
     @JsonProperty("description")
     private String description;
 
-    @NotNull
+    @NotNull(message = "date can not be null")
     @JsonProperty("date")
     private LocalDate date;
 

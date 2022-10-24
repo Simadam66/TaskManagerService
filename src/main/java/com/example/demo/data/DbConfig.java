@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.time.Month.*;
@@ -23,18 +24,21 @@ public class DbConfig {
                     .name("Mariah")
                     .email("mariah.jamal@gmail.com")
                     .birthDate(LocalDate.of(2000, JANUARY, 5))
+                    .tasks(new ArrayList<>())
                     .build();
 
             User alex = User.builder()
                     .name("Alex")
                     .email("alex.johnson@freemail.com")
                     .birthDate(LocalDate.of(2004, FEBRUARY, 8))
+                    .tasks(new ArrayList<>())
                     .build();
 
             User lajos = User.builder()
                     .name("Lajos")
                     .email("lajos.skywalker@citromail.com")
                     .birthDate(LocalDate.of(1980, FEBRUARY, 23))
+                    .tasks(new ArrayList<>())
                     .build();
 
             Task task1 = Task.builder()

@@ -1,0 +1,25 @@
+version: '3'
+services:
+  service:
+    # Path to dockerfile.
+    # '.' represents the current directory in which
+    # docker-compose.yml is present.
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/test
+
+  db:
+    image: postgres:14.5
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=test123
+      - POSTGRES_DB=test
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./database:/var/lib/postgresql/data

@@ -15,8 +15,8 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   liquibase:
-    change-log: classpath:db.changelog/changelog-master.yml
     enabled: true
+    change-log: classpath:db/changelog/changelog-master.yml
 
 server:
   error:

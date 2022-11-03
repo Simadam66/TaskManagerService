@@ -1,4 +1,0 @@
-databaseChangeLog:
-
-  - include:
-      file: changelog-init.yml

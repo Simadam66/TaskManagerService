@@ -7,6 +7,9 @@ import com.example.demo.model.user.User;
 import com.example.demo.model.user.UserRepository;
 import com.example.demo.dto.UserRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +29,7 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    @Cacheable(value = "user_cache", key = "#userId")
     public User getUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
@@ -42,12 +46,14 @@ public class UserService {
         return userToSave;
     }
 
+    @CacheEvict(value = "user_cache", key = "#userId")
     public boolean deleteUser(Long userId) {
         User user = getUser(userId);
         userRepository.deleteById(userId);
         return true;
     }
 
+    @CachePut(value = "user_cache", key = "#userId")
     @Transactional
     public User updateUser(Long userId, UserRequest userRequest) {
         User userToUpdate = getUser(userId);

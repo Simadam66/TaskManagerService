@@ -6,6 +6,9 @@ import com.example.demo.model.task.Task;
 import com.example.demo.model.task.TaskRepository;
 import com.example.demo.dto.TaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,7 @@ public class TaskService {
         return userService.getUser(userId).getTasks();
     }
 
+    @Cacheable(value = "task_cache", key = "#taskId")
     public Task getTask(Long userId, Long taskId) {
         List<Task> userTasks = getUserTasks(userId);
 
@@ -49,6 +53,7 @@ public class TaskService {
         return newTask;
     }
 
+    @CacheEvict(value = "task_cache", key = "#taskId")
     public boolean deleteTask(Long userId, Long taskId) {
         Task task = getTask(userId, taskId);
         userService.removeUserTask(userId, task);
@@ -56,6 +61,7 @@ public class TaskService {
         return true;
     }
 
+    @CachePut(value = "task_cache", key = "#taskId")
     @Transactional
     public Task updateTask(Long userId, Long taskId, TaskRequest taskRequest) {
         Task taskToUpdate = getTask(userId, taskId);

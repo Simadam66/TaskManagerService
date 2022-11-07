@@ -17,6 +17,10 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:db/changelog/changelog-master.yml
+  cache:
+    type: redis
+    redis:
+      cache-null-values: true
 
 server:
   error:

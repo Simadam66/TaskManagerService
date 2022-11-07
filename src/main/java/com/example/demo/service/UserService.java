@@ -73,6 +73,12 @@ public class UserService {
         return userToUpdate;
     }
 
+    public User getUserWithTasks(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(userId));
+        return user;
+    }
+
     public boolean removeUserTask(Long userId, Task task) {
         getUser(userId).removeTask(task);
         return true;

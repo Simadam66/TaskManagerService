@@ -33,6 +33,12 @@ public class UserService {
 
     @Cacheable(key = "#userId")
     public User getUser(Long userId) {
+        try {
+            Thread.sleep(3000);
+        }
+        catch(Exception ex) {
+
+        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
         return user;

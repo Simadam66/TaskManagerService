@@ -6,7 +6,6 @@ import com.example.demo.exception.TaskNotFoundException;
 import com.example.demo.model.task.Task;
 import com.example.demo.model.task.TaskRepository;
 import com.example.demo.model.user.User;
-import com.example.demo.model.user.UserRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,9 +32,6 @@ class TaskServiceTest {
 
     @Mock
     UserService userService;
-
-    @Mock
-    UserRepository userRepository;
 
     @InjectMocks
     TaskService taskService;
@@ -96,7 +92,7 @@ class TaskServiceTest {
 
     @Test
     void getTaskThrowsTaskNotFoundException() {
-        when(userRepository.findById(USER_1.getId())).thenReturn(Optional.of(USER_1));
+        when(userService.getUserWithTasks(USER_1.getId())).thenReturn(USER_1);
         when(taskRepository.findById(any())).thenReturn(Optional.empty());
 
         TaskNotFoundException exc =
@@ -107,7 +103,7 @@ class TaskServiceTest {
 
     @Test
     void getTaskThrowsTaskMismatchException() {
-        when(userRepository.findById(USER_1.getId())).thenReturn(Optional.of(USER_1));
+        when(userService.getUserWithTasks(USER_1.getId())).thenReturn(USER_1);
         when(taskRepository.findById(TASK_1.getId())).thenReturn(Optional.of(TASK_1));
 
         TaskMismatchException exc =
@@ -118,7 +114,7 @@ class TaskServiceTest {
 
     @Test
     void getTaskReturnsRightTask() {
-        when(userRepository.findById(USER_WITH_TASK2.getId())).thenReturn(Optional.of(USER_WITH_TASK2));
+        when(userService.getUserWithTasks(USER_WITH_TASK2.getId())).thenReturn(USER_WITH_TASK2);
         when(taskRepository.findById(TASK_2.getId())).thenReturn(Optional.of(TASK_2));
 
         Task result = taskService.getTask(USER_WITH_TASK2.getId(), TASK_2.getId());
@@ -145,7 +141,7 @@ class TaskServiceTest {
                 .build();
 
         userWithTask1.addTask(task1ToUpdate);
-        when(userRepository.findById(userWithTask1.getId())).thenReturn(Optional.of(userWithTask1));
+        when(userService.getUserWithTasks(userWithTask1.getId())).thenReturn(userWithTask1);
         when(taskRepository.findById(task1ToUpdate.getId())).thenReturn(Optional.of(task1ToUpdate));
 
         Task result = taskService.updateTask(USER_1.getId(), task1ToUpdate.getId(), TASK_1_REQUEST_SAME);
@@ -174,7 +170,7 @@ class TaskServiceTest {
                 .build();
 
         userWithTask1.addTask(task1ToUpdate);
-        when(userRepository.findById(userWithTask1.getId())).thenReturn(Optional.of(userWithTask1));
+        when(userService.getUserWithTasks(userWithTask1.getId())).thenReturn(userWithTask1);
         when(taskRepository.findById(task1ToUpdate.getId())).thenReturn(Optional.of(task1ToUpdate));
 
         Task result = taskService.updateTask(USER_1.getId(), task1ToUpdate.getId(), TASK_1_REQUEST_MOD);
@@ -184,4 +180,5 @@ class TaskServiceTest {
         assertEquals(TASK_1_REQUEST_MOD.getDate(), result.getDate());
         verify(taskRepository, times(1)).save(task1ToUpdate);
     }
+
 }

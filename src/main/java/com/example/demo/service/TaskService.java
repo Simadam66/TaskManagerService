@@ -2,12 +2,9 @@ package com.example.demo.service;
 
 import com.example.demo.exception.TaskNotFoundException;
 import com.example.demo.exception.TaskMismatchException;
-import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.task.Task;
 import com.example.demo.model.task.TaskRepository;
 import com.example.demo.dto.TaskRequest;
-import com.example.demo.model.user.User;
-import com.example.demo.model.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
@@ -25,19 +22,15 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final UserService userService;
-    private final UserRepository userRepository;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, UserService userService, UserRepository userRepository) {
+    public TaskService(TaskRepository taskRepository, UserService userService) {
         this.taskRepository = taskRepository;
         this.userService = userService;
-        this.userRepository = userRepository;
     }
 
     public List<Task> getUserTasks(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-        return user.getTasks();
+        return userService.getUserWithTasks(userId).getTasks();
     }
 
     @Cacheable(key = "#taskId")

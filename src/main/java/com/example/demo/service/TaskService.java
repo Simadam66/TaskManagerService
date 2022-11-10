@@ -35,6 +35,12 @@ public class TaskService {
 
     @Cacheable(key = "#taskId")
     public Task getTask(Long userId, Long taskId) {
+        try {
+            Thread.sleep(3000);
+        }
+        catch(Exception ex) {
+
+        }
         List<Task> userTasks = getUserTasks(userId);
 
         taskRepository.findById(taskId)

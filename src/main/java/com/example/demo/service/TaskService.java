@@ -10,11 +10,13 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @CacheConfig(cacheNames = "task_cache")
 @Service
@@ -23,10 +25,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserService userService;
 
+    private final RedisTemplate<String, Object> redis;
+
     @Autowired
-    public TaskService(TaskRepository taskRepository, UserService userService) {
+    public TaskService(TaskRepository taskRepository, UserService userService, RedisTemplate<String, Object> redis) {
         this.taskRepository = taskRepository;
         this.userService = userService;
+        this.redis = redis;
     }
 
     public List<Task> getUserTasks(Long userId) {
@@ -58,6 +63,13 @@ public class TaskService {
         Task newTask = Task.of(taskRequest);
         userService.addUserTask(userId, newTask);
         taskRepository.save(newTask);
+
+        // TODO: CACHE IT
+        StringBuilder sbKey = new StringBuilder();
+        String key = sbKey.append("task_cache::").append(newTask.getId()).toString();
+        redis.opsForValue().set(key, newTask);
+        redis.expire(key,10, TimeUnit.MINUTES);
+
         return newTask;
     }
 

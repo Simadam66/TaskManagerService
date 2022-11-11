@@ -11,20 +11,25 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @CacheConfig(cacheNames = "user_cache")
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
+    private final RedisTemplate<String, Object> redis;
+
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, RedisTemplate<String, Object> redis) {
         this.userRepository = userRepository;
+        this.redis = redis;
     }
 
     public List<User> getUsers() {
@@ -51,6 +56,13 @@ public class UserService {
         }
         User userToSave = User.of(userRequest);
         userRepository.save(userToSave);
+
+        // TODO: CACHE IT
+        StringBuilder sbKey = new StringBuilder();
+        String key = sbKey.append("user_cache::").append(userToSave.getId()).toString();
+        redis.opsForValue().set(key, userToSave);
+        redis.expire(key,10, TimeUnit.MINUTES);
+
         return userToSave;
     }
 

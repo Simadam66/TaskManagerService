@@ -57,7 +57,6 @@ public class TaskService {
         userService.addUserTask(userId, newTask);
         taskRepository.save(newTask);
 
-        // TODO: CACHE IT
         redis.cacheTask(newTask);
         return newTask;
     }

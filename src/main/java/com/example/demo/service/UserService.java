@@ -50,7 +50,6 @@ public class UserService {
         User userToSave = User.of(userRequest);
         userRepository.save(userToSave);
 
-        // TODO: CACHE IT
         redis.cacheUser(userToSave);
         return userToSave;
     }

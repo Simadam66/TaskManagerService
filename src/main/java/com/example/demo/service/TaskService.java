@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.cache.RedisClient;
 import com.example.demo.exception.TaskNotFoundException;
 import com.example.demo.exception.TaskMismatchException;
 import com.example.demo.model.task.Task;
@@ -10,13 +11,11 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @CacheConfig(cacheNames = "task_cache")
 @Service
@@ -25,10 +24,10 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final UserService userService;
 
-    private final RedisTemplate<String, Object> redis;
+    private final RedisClient redis;
 
     @Autowired
-    public TaskService(TaskRepository taskRepository, UserService userService, RedisTemplate<String, Object> redis) {
+    public TaskService(TaskRepository taskRepository, UserService userService, RedisClient redis) {
         this.taskRepository = taskRepository;
         this.userService = userService;
         this.redis = redis;
@@ -40,12 +39,6 @@ public class TaskService {
 
     @Cacheable(key = "#taskId")
     public Task getTask(Long userId, Long taskId) {
-        try {
-            Thread.sleep(3000);
-        }
-        catch(Exception ex) {
-
-        }
         List<Task> userTasks = getUserTasks(userId);
 
         taskRepository.findById(taskId)
@@ -65,11 +58,7 @@ public class TaskService {
         taskRepository.save(newTask);
 
         // TODO: CACHE IT
-        StringBuilder sbKey = new StringBuilder();
-        String key = sbKey.append("task_cache::").append(newTask.getId()).toString();
-        redis.opsForValue().set(key, newTask);
-        redis.expire(key,10, TimeUnit.MINUTES);
-
+        redis.cacheTask(newTask);
         return newTask;
     }
 

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.cache.RedisClient;
 import com.example.demo.exception.EmailTakenException;
 import com.example.demo.exception.UserNotFoundException;
 import com.example.demo.model.task.Task;
@@ -11,23 +12,21 @@ import org.springframework.cache.annotation.CacheConfig;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 @CacheConfig(cacheNames = "user_cache")
 @Service
 public class UserService {
     private final UserRepository userRepository;
 
-    private final RedisTemplate<String, Object> redis;
+    private final RedisClient redis;
 
     @Autowired
-    public UserService(UserRepository userRepository, RedisTemplate<String, Object> redis) {
+    public UserService(UserRepository userRepository, RedisClient redis) {
         this.userRepository = userRepository;
         this.redis = redis;
     }
@@ -38,12 +37,6 @@ public class UserService {
 
     @Cacheable(key = "#userId")
     public User getUser(Long userId) {
-        try {
-            Thread.sleep(3000);
-        }
-        catch(Exception ex) {
-
-        }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
         return user;
@@ -58,11 +51,7 @@ public class UserService {
         userRepository.save(userToSave);
 
         // TODO: CACHE IT
-        StringBuilder sbKey = new StringBuilder();
-        String key = sbKey.append("user_cache::").append(userToSave.getId()).toString();
-        redis.opsForValue().set(key, userToSave);
-        redis.expire(key,10, TimeUnit.MINUTES);
-
+        redis.cacheUser(userToSave);
         return userToSave;
     }
 

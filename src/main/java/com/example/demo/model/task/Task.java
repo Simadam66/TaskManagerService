@@ -2,10 +2,12 @@ package com.example.demo.model.task;
 
 import com.example.demo.dto.TaskRequest;
 import com.example.demo.model.user.User;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @EqualsAndHashCode(exclude = "id")
@@ -16,7 +18,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "tasks")
 @ToString(exclude = "user")
-public class Task {
+public class Task implements Serializable {
 
     @Id
     @SequenceGenerator(
@@ -41,6 +43,7 @@ public class Task {
     @Column(name = "date")
     private LocalDate date;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 

@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.cache.RedisClient;
 import com.example.demo.dto.UserRequest;
 import com.example.demo.exception.EmailTakenException;
 import com.example.demo.exception.UserNotFoundException;
@@ -26,6 +27,9 @@ class UserServiceTest {
 
     @InjectMocks
     UserService service;
+
+    @Mock
+    RedisClient redis;
 
     private static final Long USER_ID_1 = 1L;
     private static final User USER_1 =

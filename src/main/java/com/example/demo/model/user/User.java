@@ -2,10 +2,12 @@ package com.example.demo.model.user;
 
 import com.example.demo.dto.UserRequest;
 import com.example.demo.model.task.Task;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -19,7 +21,7 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @EqualsAndHashCode(exclude = "id")
-public class User {
+public class User implements Serializable {
 
     @Id
     @SequenceGenerator(
@@ -46,6 +48,7 @@ public class User {
     @Transient
     private Integer age;
 
+    @JsonManagedReference
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.ALL,

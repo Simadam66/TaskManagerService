@@ -1,0 +1,24 @@
+@startuml
+'https://www.planttext.com/ <-Ide masold hogy megnezd
+<style>
+title {
+  HorizontalAlignment right
+  FontSize 18
+  FontColor Black
+}
+</style>
+
+rectangle Client_App #Technology
+rectangle Task_Manager_Service #lightblue
+database Redis_Cache #Tomato
+database PostgresDB #RosyBrown
+
+Redis_Cache --u-> Task_Manager_Service :Data
+Redis_Cache <-u-- Task_Manager_Service :Request_record
+
+PostgresDB --u-> Task_Manager_Service :Data
+PostgresDB <-u-- Task_Manager_Service : SQL_Query
+
+Client_App --r-> Task_Manager_Service :HTTP-API_Call
+Client_App <-r--Task_Manager_Service :JSON
+@enduml
